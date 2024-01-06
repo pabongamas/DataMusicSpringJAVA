@@ -1,0 +1,65 @@
+CREATE TABLE ARTISTAS (
+  "id_artista" SERIAL NOT NULL,
+  "nombre" VARCHAR(100) NOT NULL,
+  PRIMARY KEY ("id_artista"));
+  
+  CREATE TABLE GENEROS (
+  "id_genero" SERIAL NOT NULL,
+  "nombre" VARCHAR(100) NOT NULL,
+  PRIMARY KEY ("id_genero"));
+  
+  
+  CREATE TABLE  ALBUMS (
+  "id_album" SERIAL NOT NULL,
+  "nombre" VARCHAR(100) NULL,
+  "anio" INT NOT NULL,
+  "id_genero" INT NOT NULL,
+  PRIMARY KEY ("id_album"),
+  CONSTRAINT "fk_ALBUMS_GENEROS"
+    FOREIGN KEY ("id_genero")
+    REFERENCES GENEROS ("id_genero")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+    
+    
+    
+    CREATE TABLE  ALBUMS_ARTISTA (
+  "id_album" INT NOT NULL,
+  "id_artista" INT NOT NULL,
+  PRIMARY KEY ("id_album", "id_artista"),
+  CONSTRAINT "fk_ALBUMS_ARTISTA_ARTISTA1"
+    FOREIGN KEY ("id_artista")
+    REFERENCES ARTISTAS ("id_artista")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_ALBUMS_ARTISTA_ALBUMS1"
+    FOREIGN KEY ("id_album")
+    REFERENCES ALBUMS ("id_album")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+   
+   
+   
+   
+   insert into generos values(1,'heavy metal');
+   insert into generos values(2,'Rock');
+   
+   insert into artistas values(1,'Ozzy Osbourne');
+   insert into artistas values(2,'Creedence Clearwater Revival');
+   
+   insert into albums values(1,'Cosmos factory',1970,2);
+   insert into albums values(2,'Pendulum',1970,2);
+   insert into albums values(3,'No More Tears',1991,1);
+   
+   
+   insert into ALBUMS_ARTISTA values(1,2);
+   insert into ALBUMS_ARTISTA values(2,2);
+   insert into ALBUMS_ARTISTA values(3,1);
+   
+   
+   -- SE REINICIAN LAS SECUENCIAS SEGÚN LOS DATOS INICIALES
+SELECT setval('public.generos_id_genero_seq', 2, true);
+SELECT setval('public.artistas_id_artista_seq', 2, true);
+SELECT setval('public.albums_id_album_seq', 3, true);
+   
+   
