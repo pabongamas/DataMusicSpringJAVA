@@ -2,7 +2,7 @@ package com.datamusic.datamusic.persistence.entity;
 
 import java.util.List;
 
-import com.datamusic.datamusic.domain.Album;
+// import com.datamusic.datamusic.domain.Album;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
