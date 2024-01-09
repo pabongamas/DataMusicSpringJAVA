@@ -1,7 +1,6 @@
 package com.datamusic.datamusic.persistence.mapper;
 
 import java.util.List;
-import java.util.Locale.Category;
 
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -13,20 +12,22 @@ import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 
 @Mapper(componentModel = "spring")
 public interface AlbumMapper {
-     @Mappings({
-            @Mapping(source = "idAlbum", target = "albumId"),
-            @Mapping(source = "nombre", target = "name"),
-            @Mapping(source = "anio", target = "year"),
-            @Mapping(source = "idGenero", target = "genderId"),
-            @Mapping(source = "genero", target = "gender"),
-    })
-    Album toAlbum(AlbumEntity albumEntity);
+  @Mappings({
+      @Mapping(source = "idAlbum", target = "albumId"),
+      @Mapping(source = "nombre", target = "name"),
+      @Mapping(source = "anio", target = "year"),
+      @Mapping(source = "idGenero", target = "genderId"),
+      @Mapping(source = "genero.idGenero", target = "gender.genderId"),
+      @Mapping(source = "genero.nombre", target = "gender.name"),
+      @Mapping(target = "gender.album",ignore=true),
+  })
+  Album toAlbum(AlbumEntity albumEntity);
 
-      List<Album> toAlbum(List<AlbumEntity>albums);
+  List<Album> toAlbum(List<AlbumEntity> albums);
 
-    @InheritInverseConfiguration
-    //  @Mappings({
-    //         @Mapping(source = "idAlbum", target = "albumId"),
-    // })
-    AlbumEntity toAlbumEntity(Album album);
+  @InheritInverseConfiguration
+   @Mappings({
+      @Mapping(target = "genero.albums",ignore=true),
+  })
+  AlbumEntity toAlbumEntity(Album album);
 }
