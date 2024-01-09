@@ -10,11 +10,13 @@ import org.mapstruct.Mappings;
 import com.datamusic.datamusic.domain.Artist;
 import com.datamusic.datamusic.persistence.entity.Artista;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {AlbumArtistMapper.class,AlbumMapper.class})
 public interface ArtistMapper {
       @Mappings({
         @Mapping(source="idArtista",target="artistId"),
         @Mapping(source="nombre",target="name"),
+        @Mapping(source="albums",target="albums"),
+        // @Mapping(source="albumsInformacion",target="albumsInfo"),
     })
     Artist toArtist(Artista artista);
     List<Artist> toArtists(List<Artista>artistas);

@@ -1,11 +1,14 @@
 package com.datamusic.datamusic.domain;
 
+import java.util.List;
+
 public class Album {
     private Long albumId;
     private String name;
     private Integer year;
     private Long genderId;
     private Gender gender;
+    private List<AlbumArtist>artists;
 
     
     public Long getAlbumId() {
@@ -38,6 +41,14 @@ public class Album {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+    public List<AlbumArtist> getArtists() {
+        return artists;
+    }
+    public void setArtists(List<AlbumArtist> artists) {
+        this.artists = artists;
+    }
+
+    
     
 
     

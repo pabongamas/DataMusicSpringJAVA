@@ -10,7 +10,7 @@ import org.mapstruct.Mappings;
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {AlbumArtistMapper.class})
 public interface AlbumMapper {
   @Mappings({
       @Mapping(source = "idAlbum", target = "albumId"),
@@ -20,6 +20,8 @@ public interface AlbumMapper {
       @Mapping(source = "genero.idGenero", target = "gender.genderId"),
       @Mapping(source = "genero.nombre", target = "gender.name"),
       @Mapping(target = "gender.album",ignore=true),
+      @Mapping(source = "artistas", target = "artists"),
+
   })
   Album toAlbum(AlbumEntity albumEntity);
 

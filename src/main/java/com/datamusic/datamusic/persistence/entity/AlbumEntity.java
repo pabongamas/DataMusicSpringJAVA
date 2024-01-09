@@ -1,5 +1,10 @@
 package com.datamusic.datamusic.persistence.entity;
 
+import java.util.List;
+
+import com.datamusic.datamusic.domain.Artist;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,6 +34,9 @@ public class AlbumEntity {
     @ManyToOne
     @JoinColumn(name = "id_genero", insertable = false, updatable = false)
     private Genero genero;
+
+    @OneToMany(mappedBy = "album",cascade = {CascadeType.ALL})
+    private List<AlbumsArtista> artistas;
 
     public Long getIdAlbum() {
         return idAlbum;
@@ -68,5 +77,14 @@ public class AlbumEntity {
     public void setGenero(Genero genero) {
         this.genero = genero;
     }
+
+    public List<AlbumsArtista> getArtistas() {
+        return artistas;
+    }
+
+    public void setArtistas(List<AlbumsArtista> artistas) {
+        this.artistas = artistas;
+    }
+    
 
 }
