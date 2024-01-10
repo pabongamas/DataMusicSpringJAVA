@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,6 +25,17 @@ public class GeneroRepository implements GenderRepository {
     public List<Gender> getAll() {
         List<Genero> generos = (List<Genero>) generoCrudRepository.findAll();
         return mapper.toGenders(generos);
+    }
+
+    @Override
+    public Optional<Gender> getGender(Long genderId) {
+        return generoCrudRepository.findById(genderId).map(gender -> mapper.toGender(gender));
+    }
+
+    @Override
+    public Gender save(Gender gender) {
+        Genero genero = mapper.toGenero(gender);
+        return mapper.toGender(generoCrudRepository.save(genero));
     }
 
 }

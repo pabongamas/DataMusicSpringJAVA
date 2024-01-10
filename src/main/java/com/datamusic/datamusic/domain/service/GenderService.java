@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,11 @@ public class GenderService {
 
     public List<Gender> getAll() {
         return genderRepository.getAll();
+    }
+    public Optional<Gender> getGender(Long genderId){
+        return genderRepository.getGender(genderId);
+    }
+    public Gender save(Gender gender) {
+        return genderRepository.save(gender);
     }
 }

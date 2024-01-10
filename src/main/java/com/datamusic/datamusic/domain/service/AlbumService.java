@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,5 +16,12 @@ public class AlbumService {
 
     public List<Album> getAll() {
         return albumRepository.getAll();
+    }
+
+    public Optional<Album>getAlbumById(Long albumId){
+        return albumRepository.getAlbumById(albumId);
+    }
+      public Album save(Album album) {
+        return albumRepository.save(album);
     }
 }

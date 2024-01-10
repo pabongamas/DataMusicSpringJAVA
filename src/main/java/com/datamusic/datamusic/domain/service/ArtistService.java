@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,11 @@ public class ArtistService {
 
      public List<Artist> getAll() {
         return ArtistRepository.getAll();
+    }
+    public Optional<Artist> getArtistById(Long artistId){
+        return ArtistRepository.getArtist(artistId);
+    }
+    public Artist save(Artist artist){
+        return ArtistRepository.save(artist);
     }
 }

@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,17 @@ public class AlbumEntityRepository implements AlbumRepository {
         List<AlbumEntity> albums = (List<AlbumEntity>) albumCrudRepository.findAll();
         return mapper.toAlbum(albums);
     }
+
+    @Override
+    public Optional<Album> getAlbumById(Long albumId) {
+        return albumCrudRepository.findById(albumId).map(album->mapper.toAlbum(album));
+    }
+
+    @Override
+    public Album save(Album album) {
+       AlbumEntity albumEntity=mapper.toAlbumEntity(album);
+       return mapper.toAlbum(albumCrudRepository.save(albumEntity));
+    }
+    
 
 }
