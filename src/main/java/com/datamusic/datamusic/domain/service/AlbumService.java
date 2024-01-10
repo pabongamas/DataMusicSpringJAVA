@@ -24,4 +24,10 @@ public class AlbumService {
       public Album save(Album album) {
         return albumRepository.save(album);
     }
+    public boolean delete(Long albumId){
+        return getAlbumById(albumId).map(album->{
+            albumRepository.delete(albumId);
+            return true;
+        }).orElse(false);
+    }
 }

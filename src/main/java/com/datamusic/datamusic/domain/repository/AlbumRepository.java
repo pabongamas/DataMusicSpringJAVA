@@ -9,4 +9,5 @@ public interface  AlbumRepository {
     List<Album>getAll();
     Optional<Album>getAlbumById(Long albumId);
     Album save(Album album);
+    void delete(Long albumId);
 }

@@ -45,5 +45,10 @@ public class ArtistaRepository implements ArtistRepository {
       Artista artista=mapper.toArtista(artist);
       return mapper.toArtist(artistaCrudRepository.save(artista));
     }
+
+    @Override
+    public void delete(Long artistId) {
+      artistaCrudRepository.deleteById(artistId);
+    }
     
 }

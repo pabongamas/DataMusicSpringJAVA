@@ -38,4 +38,9 @@ public class GeneroRepository implements GenderRepository {
         return mapper.toGender(generoCrudRepository.save(genero));
     }
 
+    @Override
+    public void delete(Long genderId) {
+        generoCrudRepository.deleteById(genderId);
+    }
+
 }

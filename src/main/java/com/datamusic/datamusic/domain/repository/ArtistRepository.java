@@ -9,4 +9,5 @@ public interface ArtistRepository {
     List<Artist>getAll();
     Optional<Artist>getArtist(Long artistId);
     Artist save(Artist artist);
+    void delete(Long artistId);
 }

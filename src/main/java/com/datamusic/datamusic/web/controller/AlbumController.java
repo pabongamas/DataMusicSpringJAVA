@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,16 +23,28 @@ public class AlbumController {
     private AlbumService albumService;
 
     @GetMapping("/all")
-     public ResponseEntity<List<Album>> getAll() {
+    public ResponseEntity<List<Album>> getAll() {
         // return productService.getAll();
         return new ResponseEntity<>(albumService.getAll(), HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity <Album> getAlbumById(@PathVariable("id")Long albumId){
-        return albumService.getAlbumById(albumId).map(album->new ResponseEntity<>(album,HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<Album> getAlbumById(@PathVariable("id") Long albumId) {
+        return albumService.getAlbumById(albumId).map(album -> new ResponseEntity<>(album, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @PostMapping("/save")
     public ResponseEntity<Album> save(@RequestBody Album album) {
         return new ResponseEntity<>(albumService.save(album), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@RequestBody Long albumId) {
+        if (albumService.delete(albumId)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

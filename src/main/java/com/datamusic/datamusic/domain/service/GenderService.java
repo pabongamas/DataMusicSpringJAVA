@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.repository.GenderRepository;
 
-
 @Service
 public class GenderService {
     @Autowired
@@ -18,10 +17,19 @@ public class GenderService {
     public List<Gender> getAll() {
         return genderRepository.getAll();
     }
-    public Optional<Gender> getGender(Long genderId){
+
+    public Optional<Gender> getGender(Long genderId) {
         return genderRepository.getGender(genderId);
     }
+
     public Gender save(Gender gender) {
         return genderRepository.save(gender);
+    }
+
+    public boolean delete(Long genderId) {
+        return getGender(genderId).map(gender -> {
+            genderRepository.delete(genderId);
+            return true;
+        }).orElse(false);
     }
 }

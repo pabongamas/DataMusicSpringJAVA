@@ -24,4 +24,10 @@ public class ArtistService {
     public Artist save(Artist artist){
         return ArtistRepository.save(artist);
     }
+    public boolean delete(Long artistId){
+        return getArtistById(artistId).map(artist->{
+            ArtistRepository.delete(artistId);
+            return true;
+        }).orElse(false);
+    }
 }

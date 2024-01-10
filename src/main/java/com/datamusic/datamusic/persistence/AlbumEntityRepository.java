@@ -37,6 +37,11 @@ public class AlbumEntityRepository implements AlbumRepository {
        AlbumEntity albumEntity=mapper.toAlbumEntity(album);
        return mapper.toAlbum(albumCrudRepository.save(albumEntity));
     }
+
+    @Override
+    public void delete(Long albumId) {
+       albumCrudRepository.deleteById(albumId);
+    }
     
 
 }
