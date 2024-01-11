@@ -25,7 +25,6 @@ public class GenderController {
 
     @GetMapping("/all")
      public ResponseEntity<List<Gender>> getAll() {
-        // return productService.getAll();
         return new ResponseEntity<>(genderService.getAll(), HttpStatus.OK);
     }
 

@@ -42,6 +42,13 @@ public class AlbumEntityRepository implements AlbumRepository {
     public void delete(Long albumId) {
        albumCrudRepository.deleteById(albumId);
     }
+
+    @Override
+    public List<Album> getAlbumsByGender(Long genderId) {
+        List<AlbumEntity> albums = (List<AlbumEntity>) albumCrudRepository.findByIdGenero(genderId);
+        return mapper.toAlbum(albums);
+      
+    }
     
 
 }

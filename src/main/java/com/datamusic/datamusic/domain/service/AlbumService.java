@@ -21,6 +21,9 @@ public class AlbumService {
     public Optional<Album>getAlbumById(Long albumId){
         return albumRepository.getAlbumById(albumId);
     }
+    public List<Album>getAlbumByGenderId(Long genderId){
+        return albumRepository.getAlbumsByGender(genderId);
+    }
       public Album save(Album album) {
         return albumRepository.save(album);
     }

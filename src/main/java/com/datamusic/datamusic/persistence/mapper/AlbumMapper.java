@@ -2,12 +2,15 @@ package com.datamusic.datamusic.persistence.mapper;
 
 import java.util.List;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 import com.datamusic.datamusic.domain.Album;
+import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 
 @Mapper(componentModel = "spring",uses = {AlbumArtistMapper.class})
@@ -26,6 +29,13 @@ public interface AlbumMapper {
   Album toAlbum(AlbumEntity albumEntity);
 
   List<Album> toAlbum(List<AlbumEntity> albums);
+
+  @AfterMapping
+    default void removeFieldsNoNecesary(@MappingTarget Album album) {
+       album.getArtists().forEach(artist->{
+            artist.setAlbum(null);
+       });
+    }
 
   @InheritInverseConfiguration
    @Mappings({

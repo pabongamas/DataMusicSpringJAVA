@@ -34,6 +34,11 @@ public class AlbumController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/gender/{id}")
+    public ResponseEntity<List<Album>> getAlbumByGenderId(@PathVariable("id") Long genderId) {
+        return new ResponseEntity<>(albumService.getAlbumByGenderId(genderId), HttpStatus.OK);
+    }
+
     @PostMapping("/save")
     public ResponseEntity<Album> save(@RequestBody Album album) {
         return new ResponseEntity<>(albumService.save(album), HttpStatus.CREATED);

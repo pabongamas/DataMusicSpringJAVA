@@ -9,5 +9,5 @@ public interface GenderRepository {
     List<Gender>getAll();
     Optional<Gender>getGender(Long genderId);
     Gender save(Gender gender);
-    void delete(Long genderId);
+    boolean delete(Long genderId);
 }

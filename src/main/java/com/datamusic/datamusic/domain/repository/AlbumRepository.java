@@ -10,4 +10,5 @@ public interface  AlbumRepository {
     Optional<Album>getAlbumById(Long albumId);
     Album save(Album album);
     void delete(Long albumId);
+    List<Album>getAlbumsByGender(Long genderId);
 }

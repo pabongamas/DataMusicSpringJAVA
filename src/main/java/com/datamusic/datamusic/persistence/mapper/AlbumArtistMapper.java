@@ -25,14 +25,17 @@ public interface AlbumArtistMapper {
                         @Mapping(source = "album.genero", target = "album.gender"),
                         @Mapping(source = "album.genero.idGenero", target = "album.gender.genderId"),
                         @Mapping(source = "album.genero.nombre", target = "album.gender.name"),
-                        // @Mapping(source="artista.nombre",target = "artist.name") // Ignora la propiedad "artists"
+                        // @Mapping(source = "artista", target = "artist", ignore = false),
+                        // @Mapping(source = "artista.idArtista", target = "artist.artistId", ignore = false),
+                        
         })
         AlbumArtist toAlbumArtist(AlbumsArtista albumsArtista);
-        // @AfterMapping
-        // default void removeArtistField(@MappingTarget AlbumArtist albumArtist) {
-        // albumArtist.setArtist(null);
-//     }
-        
+
+        @AfterMapping
+        default void removeArtistField(@MappingTarget AlbumArtist AlbumArtist) {
+                // System.out.println("Aca");
+                // System.out.println(AlbumArtist.getArtist());
+        }
 
         List<AlbumArtist> toAlbumArtist(List<AlbumsArtista> albumsArtista);
 

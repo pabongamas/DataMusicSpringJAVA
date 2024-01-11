@@ -8,7 +8,9 @@ public class Album {
     private Long albumId;
     private String name;
     private Integer year;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long genderId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Gender gender;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<AlbumArtist> artists;

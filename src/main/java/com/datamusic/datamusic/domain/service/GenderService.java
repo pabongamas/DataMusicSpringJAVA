@@ -28,8 +28,8 @@ public class GenderService {
 
     public boolean delete(Long genderId) {
         return getGender(genderId).map(gender -> {
-            genderRepository.delete(genderId);
-            return true;
+            boolean rta=genderRepository.delete(genderId);
+            return rta;
         }).orElse(false);
     }
 }

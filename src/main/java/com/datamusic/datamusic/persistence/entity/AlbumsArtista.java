@@ -27,7 +27,7 @@ public class AlbumsArtista {
     @MapsId("idArtista")
     @JoinColumn(name = "id_artista", insertable = false, updatable = false)
     private Artista artista;
-    
+
     public AlbumsArtistaPK getId() {
         return id;
     }
@@ -45,13 +45,12 @@ public class AlbumsArtista {
     }
 
     public Artista getArtista() {
+        System.out.println(artista.getNombre()+" console");
         return artista;
     }
 
     public void setArtista(Artista artista) {
         this.artista = artista;
     }
-
-    
 
 }
