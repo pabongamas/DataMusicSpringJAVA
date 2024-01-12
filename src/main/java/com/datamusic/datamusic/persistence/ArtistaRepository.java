@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.datamusic.datamusic.domain.Artist;
+import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.repository.ArtistRepository;
 import com.datamusic.datamusic.persistence.crud.ArtistaCrudRepository;
 import com.datamusic.datamusic.persistence.entity.Artista;
@@ -42,6 +45,13 @@ public class ArtistaRepository implements ArtistRepository {
 
     @Override
     public Artist save(Artist artist) {
+      // verifico si existen artistas ya con ese nombre
+      List<Artist> artistasByName=getArtistsByName(artist.getName());
+      if (!artistasByName.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "El artista  " + artist.getName() + " ya se encuentra registrado.");
+        }
+     
       Artista artista=mapper.toArtista(artist);
       return mapper.toArtist(artistaCrudRepository.save(artista));
     }
@@ -49,6 +59,13 @@ public class ArtistaRepository implements ArtistRepository {
     @Override
     public void delete(Long artistId) {
       artistaCrudRepository.deleteById(artistId);
+    }
+
+    @Override
+    public List<Artist> getArtistsByName(String name) {
+        List<Artista> artistasByName = (List<Artista>)artistaCrudRepository.findByNombre(name);
+        return mapper.toArtists(artistasByName);
+
     }
     
 }
