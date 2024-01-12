@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.datamusic.datamusic.domain.Artist;
-import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.repository.ArtistRepository;
 import com.datamusic.datamusic.persistence.crud.ArtistaCrudRepository;
 import com.datamusic.datamusic.persistence.entity.Artista;
