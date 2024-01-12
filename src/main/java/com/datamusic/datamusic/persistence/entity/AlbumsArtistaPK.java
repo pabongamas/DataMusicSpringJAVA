@@ -13,6 +13,13 @@ public class AlbumsArtistaPK implements Serializable {
     @Column(name="id_artista")
     private Long idArtista;
 
+    
+
+    public AlbumsArtistaPK(Long idAlbum, Long idArtista) {
+        this.idAlbum = idAlbum;
+        this.idArtista = idArtista;
+    }
+
     public Long getIdAlbum() {
         return idAlbum;
     }
