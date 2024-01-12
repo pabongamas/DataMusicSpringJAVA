@@ -45,7 +45,6 @@ public class AlbumsArtista {
     }
 
     public Artista getArtista() {
-        System.out.println(artista.getNombre()+" console");
         return artista;
     }
 

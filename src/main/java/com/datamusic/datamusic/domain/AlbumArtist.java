@@ -3,6 +3,7 @@ package com.datamusic.datamusic.domain;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class AlbumArtist {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long albumId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long artistId;

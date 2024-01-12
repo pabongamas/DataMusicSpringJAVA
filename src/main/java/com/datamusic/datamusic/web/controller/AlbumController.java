@@ -45,7 +45,7 @@ public class AlbumController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@RequestBody Long albumId) {
+    public ResponseEntity delete(@PathVariable("id") Long albumId) {
         if (albumService.delete(albumId)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

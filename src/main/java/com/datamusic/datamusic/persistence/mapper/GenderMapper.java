@@ -14,7 +14,7 @@ import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 import com.datamusic.datamusic.persistence.entity.Genero;
 
-@Mapper(componentModel = "spring", uses = { AlbumMapper.class, ArtistMapper.class })
+@Mapper(componentModel = "spring", uses = { AlbumMapper.class})
 public interface GenderMapper {
   @Mappings({
       @Mapping(source = "idGenero", target = "genderId"),

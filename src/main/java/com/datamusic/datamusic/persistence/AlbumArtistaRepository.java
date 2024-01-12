@@ -28,7 +28,7 @@ public class AlbumArtistaRepository implements AlbumArtistRepository {
     @Override
     public List<AlbumArtist> getAll() {
         List<AlbumsArtista> albumsArtista = (List<AlbumsArtista>) albumArtistaCrudRepository.findAll();
-        return mapper.toAlbumArtist(albumsArtista);
+        return mapperMap.toAlbumArtistMap(albumsArtista);
     }
 
     @Override

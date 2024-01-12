@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.repository.AlbumRepository;
@@ -40,7 +42,12 @@ public class AlbumEntityRepository implements AlbumRepository {
 
     @Override
     public void delete(Long albumId) {
-       albumCrudRepository.deleteById(albumId);
+        try {
+           albumCrudRepository.deleteById(albumId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,e.getMessage());
+        }
     }
 
     @Override

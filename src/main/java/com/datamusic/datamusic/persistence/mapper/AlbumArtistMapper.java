@@ -33,8 +33,7 @@ public interface AlbumArtistMapper {
 
         @AfterMapping
         default void removeArtistField(@MappingTarget AlbumArtist AlbumArtist) {
-                // System.out.println("Aca");
-                // System.out.println(AlbumArtist.getArtist());
+              
         }
 
         List<AlbumArtist> toAlbumArtist(List<AlbumsArtista> albumsArtista);

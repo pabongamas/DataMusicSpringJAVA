@@ -10,10 +10,9 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 
 import com.datamusic.datamusic.domain.Album;
-import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 
-@Mapper(componentModel = "spring",uses = {AlbumArtistMapper.class})
+@Mapper(componentModel = "spring",uses = {ArtistByAlbumMapper.class})
 public interface AlbumMapper {
   @Mappings({
       @Mapping(source = "idAlbum", target = "albumId"),
@@ -22,7 +21,7 @@ public interface AlbumMapper {
       @Mapping(source = "idGenero", target = "genderId"),
       @Mapping(source = "genero.idGenero", target = "gender.genderId"),
       @Mapping(source = "genero.nombre", target = "gender.name"),
-      @Mapping(target = "gender.album",ignore=true),
+      @Mapping(target = "gender.album", ignore = true),
       @Mapping(source = "artistas", target = "artists"),
 
   })
@@ -31,15 +30,17 @@ public interface AlbumMapper {
   List<Album> toAlbum(List<AlbumEntity> albums);
 
   @AfterMapping
-    default void removeFieldsNoNecesary(@MappingTarget Album album) {
-       album.getArtists().forEach(artist->{
-            artist.setAlbum(null);
-       });
-    }
+  default void removeFieldsNoNecesary(@MappingTarget Album album) {
+    // if (album.getArtists()!=null) {
+      // album.getArtists().forEach(artist -> {
+      //   artist.setAlbum(null);
+      // });
+    // }
+  }
 
   @InheritInverseConfiguration
-   @Mappings({
-      @Mapping(target = "genero.albums",ignore=true),
+  @Mappings({
+      @Mapping(target = "genero.albums", ignore = true),
   })
   AlbumEntity toAlbumEntity(Album album);
 }

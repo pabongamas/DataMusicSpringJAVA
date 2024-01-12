@@ -31,6 +31,13 @@ public class GeneroRepository implements GenderRepository {
     @Override
     public List<Gender> getAll() {
         List<Genero> generos = (List<Genero>) generoCrudRepository.findAll();
+        // generos.forEach(genero->{
+        //     genero.getAlbums().forEach(album->{
+        //         album.getArtistas().forEach(artist->{
+        //             System.out.println(artist.getArtista().getNombre());
+        //         });
+        //     });
+        // });
         return mapper.toGenders(generos);
     }
 
