@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Gender;
@@ -25,21 +28,24 @@ public class GenderController {
     @Autowired
     private GenderService genderService;
 
-    @GetMapping("/all")
-    // public ResponseEntity<List<Gender>> getAll() {
-    public ResponseEntity<ApiResponse> getAll() {
-        // return new ResponseEntity<>(genderService.getAll(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ApiResponse handleException(Exception e) {
+        ApiResponse respuesta = new ApiResponse(false, "Error: " + e.getMessage(), null);
+        return respuesta;
+    }
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse> getAll() {
         try {
-            List<Gender> genders=genderService.getAll();
-            ApiResponse response = new ApiResponse("Operación exitosa");
-            response.addData("genders",genders);
-            response.addData("success",false);
+            List<Gender> genders = genderService.getAll();
+            ApiResponse response = new ApiResponse(true, "Operación exitosa");
+            response.addData("genders", genders);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Género no encontrado"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Género no encontrado"));
         }
-
 
     }
 
@@ -56,12 +62,12 @@ public class GenderController {
 
         if (genderOptional.isPresent()) {
             Gender gender = genderOptional.get();
-            ApiResponse response = new ApiResponse("Operación exitosa");
-            response.addData("gender",gender);
-            response.addData("success",false);
+            ApiResponse response = new ApiResponse(true, "Operación exitosa");
+            response.addData("gender", gender);
             return ResponseEntity.ok().body(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Género no encontrado", null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse(false, "Género no encontrado", null));
         }
     }
 
