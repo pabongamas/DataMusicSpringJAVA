@@ -3,6 +3,8 @@ package com.datamusic.datamusic.web.controller;
 import java.util.List;
 
 import java.util.Optional;
+
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +32,6 @@ public class GenderController {
     @Autowired
     private GenderService genderService;
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ApiResponse handleException(Exception e) {
-        ApiResponse respuesta = new ApiResponse(false, "Error: " + e.getMessage(), null);
-        return respuesta;
-    }
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -80,8 +75,9 @@ public class GenderController {
             ApiResponse response = new ApiResponse(true, "Operación exitosa");
             response.addData("gender", genderCreated);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error:"+ex.getMessage()));
+        } catch (SQLGrammarException ex) {
+            System.out.println("aca");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error de gramática SQL:"+ex.getSQLException()));
         }
     }
 

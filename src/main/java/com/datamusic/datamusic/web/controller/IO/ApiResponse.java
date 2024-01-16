@@ -12,6 +12,8 @@ public class ApiResponse {
     private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, Object> data;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<String, String> errors;
     public Date date;
     public ApiResponse() {
     }
@@ -25,12 +27,22 @@ public class ApiResponse {
     public void addData(String key, Object value) {
         this.data.put(key, value);
     }
+    public void addError(String key, String value) {
+        this.errors.put(key, value);
+    }
 
     public ApiResponse(boolean state,String message, Map<String, Object> data) {
         this.state=state;
         this.message = message;
         this.data = data;
         this.date = new Date();
+    }
+    public ApiResponse(boolean state,String message, Map<String, Object> data,Map<String, String> errors) {
+        this.state=state;
+        this.message = message;
+        this.data = data;
+        this.date = new Date();
+        this.errors=errors;
     }
 
 
@@ -71,6 +83,15 @@ public class ApiResponse {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    public Map<String, String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Map<String, String> errors) {
+        this.errors = errors;
+    }
+    
     
     
     
