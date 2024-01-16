@@ -4,8 +4,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.Size;
+
+
 public class Gender {
     private Long genderId;
+    @Size(min = 18, message = "La longitud del nombre debe ser igual o mayor a 18 caracteres")
     private String name;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Album> album;

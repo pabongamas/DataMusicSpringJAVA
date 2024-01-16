@@ -21,6 +21,8 @@ import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.service.GenderService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/genders")
 public class GenderController {
@@ -44,7 +46,7 @@ public class GenderController {
             response.addData("genders", genders);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "Género no encontrado"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de generos "));
         }
 
     }
@@ -72,8 +74,15 @@ public class GenderController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Gender> save(@RequestBody Gender gender) {
-        return new ResponseEntity<>(genderService.save(gender), HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> save(@Valid @RequestBody Gender gender) {
+        try {
+            Gender genderCreated =genderService.save(gender);
+            ApiResponse response = new ApiResponse(true, "Operación exitosa");
+            response.addData("gender", genderCreated);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error:"+ex.getMessage()));
+        }
     }
 
     @DeleteMapping("/delete/{id}")

@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class ApiResponse {
     public boolean state;
     private String message;
-     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, Object> data;
     public Date date;
     public ApiResponse() {
