@@ -10,4 +10,5 @@ public interface GenderRepository {
     Optional<Gender>getGender(Long genderId);
     Gender save(Gender gender);
     boolean delete(Long genderId);
+    List<Gender>getGenerosByNombre(String nombre);
 }

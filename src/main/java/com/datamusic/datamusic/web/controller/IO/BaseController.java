@@ -32,7 +32,9 @@ public class BaseController {
     @ExceptionHandler({Exception.class})
     @ResponseBody
     public ApiResponse handleException(Exception e) {
-        ApiResponse respuesta = new ApiResponse(false, "Error: " + e.getMessage(), null);
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", e.getMessage());
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
         return respuesta;
     }
  

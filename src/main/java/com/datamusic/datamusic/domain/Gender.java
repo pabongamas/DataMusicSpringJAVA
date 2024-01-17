@@ -4,13 +4,16 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 
 public class Gender {
     private Long genderId;
     @NotNull(message="El nombre no debe ser nulo")
+    @NotBlank(message = "El nombre no debe ir vacio")
     private String name;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Album> album;

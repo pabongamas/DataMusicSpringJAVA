@@ -68,4 +68,10 @@ public class GeneroRepository implements GenderRepository {
         return true;
     }
 
+    @Override
+    public List<Gender> getGenerosByNombre(String nombre) {
+        List<Genero> generos = (List<Genero>) generoCrudRepository.findByNombre(nombre);
+        return mapper.toGenders(generos);
+    }
+
 }

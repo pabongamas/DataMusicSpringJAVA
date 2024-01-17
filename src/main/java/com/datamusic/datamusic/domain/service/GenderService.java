@@ -32,4 +32,7 @@ public class GenderService {
             return rta;
         }).orElse(false);
     }
+    public List<Gender>getGendersByName(String name){
+        return genderRepository.getGenerosByNombre(name);
+    }
 }

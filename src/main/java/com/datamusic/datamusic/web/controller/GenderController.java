@@ -3,6 +3,8 @@ package com.datamusic.datamusic.web.controller;
 import java.util.List;
 
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,6 @@ public class GenderController {
     @Autowired
     private GenderService genderService;
 
-
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
         try {
@@ -41,18 +42,11 @@ public class GenderController {
             response.addData("genders", genders);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de generos "));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de generos"));
         }
 
     }
-
-    // @GetMapping("/{id}")
-    // public ResponseEntity <Gender>getGenderByid(@PathVariable("id") Long
-    // genderId){
-    // return genderService.getGender(genderId).map(gender -> new
-    // ResponseEntity<>(gender, HttpStatus.OK))
-    // .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    // }
     @GetMapping("/{id}")
     public ResponseEntity<Object> getGenderById(@PathVariable("id") Long genderId) {
         Optional<Gender> genderOptional = genderService.getGender(genderId);
@@ -63,30 +57,48 @@ public class GenderController {
             response.addData("gender", gender);
             return ResponseEntity.ok().body(response);
         } else {
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", "Género no encontrado");
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(false, "Género no encontrado", null));
+                    .body(new ApiResponse(false, "Han ocurrido errores", null, errors));
         }
     }
 
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> save(@Valid @RequestBody Gender gender) {
         try {
-            Gender genderCreated =genderService.save(gender);
+            List<Gender> genders = genderService.getGendersByName(gender.getName());
+            if (!genders.isEmpty()) {
+                Map<String, String> errors = new HashMap<String, String>();
+                errors.put("name", "EL Nombre " + gender.getName() + " ya se encuentra registrado");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ApiResponse(true, "Han ocurrido errores", null, errors));
+            }
+            Gender genderCreated = genderService.save(gender);
             ApiResponse response = new ApiResponse(true, "Operación exitosa");
             response.addData("gender", genderCreated);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (SQLGrammarException ex) {
-            System.out.println("aca");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(false, "Error de gramática SQL:"+ex.getSQLException()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()));
         }
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable("id") Long genderId) {
-        if (genderService.delete(genderId)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            boolean action = genderService.delete(genderId);
+            if (!action) {
+                Map<String, String> errors = new HashMap<String, String>();
+                errors.put("error", "Genero No Encontrado");
+                return new ResponseEntity<>(new ApiResponse(false, "Han ocurrido errores", null, errors),
+                        HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(new ApiResponse(true, "Se ha eliminado correctamente", null), HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", e.getMessage());
+            return new ResponseEntity<>(new ApiResponse(false, "Han ocurrido errores", null, errors),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
