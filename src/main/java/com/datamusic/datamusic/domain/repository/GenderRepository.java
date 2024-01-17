@@ -3,6 +3,7 @@ package com.datamusic.datamusic.domain.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.Gender;
 
 public interface GenderRepository {

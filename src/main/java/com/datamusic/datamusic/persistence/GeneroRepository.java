@@ -8,12 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.repository.GenderRepository;
 import com.datamusic.datamusic.persistence.crud.AlbumCrudRepository;
 import com.datamusic.datamusic.persistence.crud.GeneroCrudRepository;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 import com.datamusic.datamusic.persistence.entity.Genero;
+import com.datamusic.datamusic.persistence.mapper.AlbumMapper;
+import com.datamusic.datamusic.persistence.mapper.AlbumMapperImpl;
 import com.datamusic.datamusic.persistence.mapper.GenderMapper;
 
 @Repository
@@ -27,6 +30,9 @@ public class GeneroRepository implements GenderRepository {
 
     @Autowired
     private GenderMapper mapper;
+
+    @Autowired
+    private AlbumMapper mapperAlbum;
 
     @Override
     public List<Gender> getAll() {

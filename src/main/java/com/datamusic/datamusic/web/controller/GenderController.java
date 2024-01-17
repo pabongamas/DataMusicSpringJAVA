@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.Gender;
+import com.datamusic.datamusic.domain.service.AlbumService;
 import com.datamusic.datamusic.domain.service.GenderService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
@@ -33,6 +35,9 @@ public class GenderController {
 
     @Autowired
     private GenderService genderService;
+
+    @Autowired
+    private AlbumService albumService;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -87,6 +92,11 @@ public class GenderController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable("id") Long genderId) {
         try {
+
+            List<Album> albumsByGender=albumService.getAlbumByGenderId(genderId);
+            if(!albumsByGender.isEmpty()){
+                throw new IllegalStateException("No se puede eliminar el género porque hay álbumes asociados.");
+            }
             boolean action = genderService.delete(genderId);
             if (!action) {
                 Map<String, String> errors = new HashMap<String, String>();
