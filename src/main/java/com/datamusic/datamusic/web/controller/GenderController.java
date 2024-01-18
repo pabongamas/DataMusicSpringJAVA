@@ -81,7 +81,7 @@ public class GenderController {
             Gender genderCreated = genderService.save(gender);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("gender", genderCreated);
-            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false,"Error de gramática SQL:" + ex.getSQLException()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

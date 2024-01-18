@@ -43,7 +43,7 @@ public class ArtistController {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los ArtistaS"));
+                    .body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Artistas"));
         }
     }
 
@@ -58,7 +58,7 @@ public class ArtistController {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
         Map<String, String> errors = new HashMap<String, String>();
-        errors.put("error", "Artista no encontrado");
+        errors.put("error",NOT_FOUND_MESSAGE);
         return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                 HttpStatus.NOT_FOUND);
     }
@@ -70,14 +70,14 @@ public class ArtistController {
 
             if (!artistsByName.isEmpty()) {
                 Map<String, String> errors = new HashMap<String, String>();
-                errors.put("error", "El nombre de artista " + artist.getName() + " ya se encuentra regitrado");
+                errors.put("error", "El nombre de artista " + artist.getName() + " ya se encuentra registrado");
                 return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                         HttpStatus.BAD_REQUEST);
             }
             Artist artistSaved = artistService.save(artist);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("artist", artistSaved);
-            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(
                     new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
