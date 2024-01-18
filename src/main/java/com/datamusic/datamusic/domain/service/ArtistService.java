@@ -18,6 +18,10 @@ public class ArtistService {
      public List<Artist> getAll() {
         return ArtistRepository.getAll();
     }
+    
+    public List<Artist> geArtistsByName(String name) {
+        return ArtistRepository.getArtistsByName(name);
+    }
     public Optional<Artist> getArtistById(Long artistId){
         return ArtistRepository.getArtist(artistId);
     }

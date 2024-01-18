@@ -4,8 +4,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class Artist {
     private Long artistId;
+    @NotNull(message="El nombre no debe ser nulo")
+    @NotBlank(message = "El nombre no debe ir vacio")
     private String name;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<AlbumArtist> albums;
