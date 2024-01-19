@@ -95,7 +95,7 @@ public class AlbumController {
                 HttpStatus.INTERNAL_SERVER_ERROR);
         }catch(DataIntegrityViolationException ex){
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "Error de gramática SQLsasa:" + ex.getMessage()),HttpStatus.CONFLICT);
+                new ApiResponse(false, "El genero con id "+album.getGenderId()+" no se encuentra registrado",null),HttpStatus.CONFLICT);
         }
     }
 
