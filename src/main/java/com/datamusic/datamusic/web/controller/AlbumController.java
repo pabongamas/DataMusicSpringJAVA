@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
-import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.service.AlbumService;
-import com.datamusic.datamusic.domain.service.GenderService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
