@@ -39,14 +39,19 @@ public class AlbumService {
 
     public boolean delete(Long albumId) {
         return getAlbumById(albumId).map(album -> {
-            List<AlbumArtist> artistsByAlbum = albumArtistRepository.getAlbumArtistByAlbumId(albumId);
-            if (!artistsByAlbum.isEmpty()) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT, "El album " + album.getName()
-                                + " esta siendo ocupado por algun artista , por lo cual no puede ser eliminado.");
-            }
+        //   List<AlbumArtist> artistsByAlbum = albumArtistRepository.getAlbumArtistByAlbumId(albumId);
+        //     if (!artistsByAlbum.isEmpty()) {
+        //         throw new ResponseStatusException(
+        //                 HttpStatus.CONFLICT, "El album " + album.getName()
+        //                         + " esta siendo ocupado por algun artista , por lo cual no puede ser eliminado.");
+        //     }
             albumRepository.delete(albumId);
             return true;
         }).orElse(false);
+    }
+
+    public List<AlbumArtist>getartistsByAlbum(Long albumId){
+        List<AlbumArtist> artistsByAlbum = albumArtistRepository.getAlbumArtistByAlbumId(albumId);
+        return artistsByAlbum;
     }
 }

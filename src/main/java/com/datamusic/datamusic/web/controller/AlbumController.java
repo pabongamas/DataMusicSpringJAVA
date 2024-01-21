@@ -3,6 +3,7 @@ package com.datamusic.datamusic.web.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.hibernate.exception.SQLGrammarException;
@@ -11,18 +12,18 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Album;
+import com.datamusic.datamusic.domain.AlbumArtist;
+import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.service.AlbumService;
+import com.datamusic.datamusic.domain.service.GenderService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -91,20 +92,61 @@ public class AlbumController {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-        }catch(DataIntegrityViolationException ex){
+                    new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "El genero con id "+album.getGenderId()+" no se encuentra registrado",null),HttpStatus.CONFLICT);
+                    new ApiResponse(false, "El genero con id " + album.getGenderId() + " no se encuentra registrado",
+                            null),
+                    HttpStatus.CONFLICT);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity delete(@PathVariable("id") Long albumId) {
-        if (albumService.delete(albumId)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long albumId) {
+
+        try {
+            //obtengo lista  de artistas que puede tener un album
+            List<AlbumArtist> albumsByArtist = albumService.getartistsByAlbum(albumId);
+            if (!albumsByArtist.isEmpty()) {
+                //creo lista donde voy a guardar los nombres de los artistas
+                List<String> artists = new ArrayList<>();
+                //recorro lista de artistas e inserto el nombre en la lista de nombres de los artistas 
+                albumsByArtist.forEach(artistAlbum -> {
+                    artists.add(artistAlbum.getArtist().getName());
+                });
+                //los uno con el delimitador , 
+                String NamesArtist = String.join(",", artists);
+                //obtengo la informacion del album
+                Optional<Album> albumByID = albumService.getAlbumById(albumId);
+                String nameAlbum = "";
+                if (albumByID.isPresent()) {
+                    //obtengo y guardo el nombre del album
+                    nameAlbum = albumByID.get().getName();
+                }
+                //si la lista de albums por artista esta diferente de vacia es porque el album
+                //tiene artistas relacionados los cuales no se pueden eliminar
+                throw new Exception("El album " + nameAlbum
+                        + "  esta siendo ocupado por " + NamesArtist + " , por lo cual no puede ser eliminado.");
+            }
+            //si no presenta el album , artistas relacionados ,permite eliminar 
+            boolean albumdeleted = albumService.delete(albumId);
+            if (albumdeleted) {
+                return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE, null, null),
+                        HttpStatus.OK);
+            }
+            //retornamos errores por si hubo algun error en la eliminacion del album
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", NOT_FOUND_MESSAGE);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+             //retornamos errores por si hubo algun error en la eliminacion del album
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", e.getMessage());
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 }
