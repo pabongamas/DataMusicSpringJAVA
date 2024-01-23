@@ -13,4 +13,5 @@ public interface AlbumArtistaCrudRepository extends CrudRepository<AlbumsArtista
 
      List<AlbumsArtista> findByIdIdArtista(Long idArtist);
 
+     List<AlbumsArtista> findByIdIdAlbumAndIdIdArtista(Long idAlbum,Long idArtist);
 }

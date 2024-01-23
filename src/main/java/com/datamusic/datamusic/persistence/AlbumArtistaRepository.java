@@ -94,4 +94,10 @@ public class AlbumArtistaRepository implements AlbumArtistRepository {
         }
     }
 
+    @Override
+    public List<AlbumArtist> getAlbumArtistByAlbumIdAndArtistId(Long idAlbum, Long idArtist) {
+        List<AlbumsArtista> albumsArtista = (List<AlbumsArtista>) albumArtistaCrudRepository.findByIdIdAlbumAndIdIdArtista(idAlbum, idArtist);
+        return mapperMap.toAlbumArtistMap(albumsArtista);
+    }
+
 }

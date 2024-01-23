@@ -8,6 +8,7 @@ public interface AlbumArtistRepository {
     List<AlbumArtist>getAll();
     List<AlbumArtist>getAlbumArtistByAlbumId(Long idAlbum);
     List<AlbumArtist>getAlbumArtistByArtistId(Long idArtist);
+    List<AlbumArtist>getAlbumArtistByAlbumIdAndArtistId(Long idAlbum,Long idArtist);
     AlbumArtist save(AlbumArtist albumArtist);
     void delete(Long idAlbum,Long idArtist);
 

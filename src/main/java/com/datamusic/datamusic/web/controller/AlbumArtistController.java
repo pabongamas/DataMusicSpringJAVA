@@ -92,6 +92,14 @@ public class AlbumArtistController {
     public ResponseEntity<ApiResponse> delete(@PathVariable("idAlbum") Long idAlbum,
             @PathVariable("idArtista") Long idArtista) {
         try {
+
+            List<AlbumArtist>albumArtistByIds=albumArtistService.getAlbumArtistByAlbumIdAndIdArtist(idAlbum, idArtista);
+            if(albumArtistByIds.isEmpty()){
+                Map<String,String> errors=new HashMap<String,String>();
+                errors.put("error", NOT_FOUND_MESSAGE);
+                ApiResponse response=new ApiResponse(false, ERROR_MESSAGE, null, errors);
+                return new ResponseEntity<ApiResponse>(response, HttpStatus.NOT_FOUND);
+            }
             boolean albumArtistDeleted = albumArtistService.delete(idAlbum, idArtista);
             if (!albumArtistDeleted) {
                 Map<String, String> errors = new HashMap<String, String>();

@@ -34,5 +34,8 @@ public class AlbumArtistService {
         albumArtistRepository.delete(idAlbum,idArtist);
         return true;
     }
+    public List<AlbumArtist> getAlbumArtistByAlbumIdAndIdArtist(Long idAlbum,Long idArtist){
+        return albumArtistRepository.getAlbumArtistByAlbumIdAndArtistId(idAlbum, idArtist);
+    }
 
 }
