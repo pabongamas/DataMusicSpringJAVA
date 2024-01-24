@@ -20,6 +20,8 @@ import com.datamusic.datamusic.persistence.entity.AlbumsArtistaPK;
 import com.datamusic.datamusic.persistence.entity.Artista;
 import com.datamusic.datamusic.persistence.mapper.AlbumArtistMapMapper;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public class AlbumArtistaRepository implements AlbumArtistRepository {
 
