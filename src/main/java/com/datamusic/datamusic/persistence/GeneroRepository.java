@@ -29,8 +29,7 @@ public class GeneroRepository implements GenderRepository {
     @Autowired
     private GenderMapper mapper;
 
-    @Autowired
-    private AlbumMapper mapperAlbum;
+    
 
     @Override
     public List<Gender> getAll() {
