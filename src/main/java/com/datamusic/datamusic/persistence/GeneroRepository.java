@@ -14,7 +14,6 @@ import com.datamusic.datamusic.persistence.crud.AlbumCrudRepository;
 import com.datamusic.datamusic.persistence.crud.GeneroCrudRepository;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 import com.datamusic.datamusic.persistence.entity.Genero;
-import com.datamusic.datamusic.persistence.mapper.AlbumMapper;
 import com.datamusic.datamusic.persistence.mapper.GenderMapper;
 
 @Repository
