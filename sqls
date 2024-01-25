@@ -37,6 +37,18 @@ CREATE TABLE ARTISTAS (
     REFERENCES ALBUMS ("id_album")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+    CREATE TABLE CANCIONES (
+    "id_cancion" SERIAL NOT NULL,
+    "nombre" VARCHAR(255) NOT NULL,
+    "duracion" INTEGER,
+    "id_album" INT NOT NULL,
+    PRIMARY KEY ("id_cancion"),
+    CONSTRAINT "fk_CANCIONES_ALBUMS"
+    FOREIGN KEY ("id_album")
+    REFERENCES ALBUMS ("id_album")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
    
    
    
