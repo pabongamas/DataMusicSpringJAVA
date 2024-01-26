@@ -115,7 +115,7 @@ public class CancionController {
             Optional<Song> validCancion=songService.getSongByName(song.getName(),song.getAlbumId());
             if(validCancion.isPresent()){
                 Map<String, String> errors = new HashMap<String, String>();
-                errors.put("error", "La cancion "+song.getName()+" ya esta incluida en este album "+song.getAlbum().getAlbumId());
+                errors.put("error", "La cancion "+song.getName()+" ya esta incluida en este album ");
                 return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                         HttpStatus.BAD_REQUEST);
             }
