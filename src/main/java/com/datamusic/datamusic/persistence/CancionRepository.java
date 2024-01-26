@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.persistence;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -26,4 +27,39 @@ public class CancionRepository implements SongRepository {
         return mapper.toSong(canciones);
     }
 
+    @Override
+    public Optional<Song> getSong(Long songId) {
+        return cancionCrudRepository.findById(songId).map(cancion -> mapper.toSong(cancion));
+    }
+
+    @Override
+    public List<Song> getSongsByAlbumId(Long albumId) {
+        List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findByIdAlbum(albumId);
+        return mapper.toSong(canciones);
+    }
+
+    @Override
+    public List<Song> getSongsByGeneroId(Long generoId) {
+        List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findByAlbumIdGenero(generoId);
+        return mapper.toSong(canciones);
+    }
+
+    @Override
+    public List<Song> getSongsByArtistId(Long artistId) {
+        List<Cancion> cancionesArtista = (List<Cancion>) cancionCrudRepository
+                .findByAlbumArtistasArtistaIdArtistaOrderByNombreAsc(artistId);
+        return mapper.toSong(cancionesArtista);
+    }
+
+    @Override
+    public Song save(Song song) {
+        Cancion cancion = mapper.toCancion(song);
+        Cancion cancionSaved = cancionCrudRepository.save(cancion);
+        return mapper.toSong(cancionSaved);
+    }
+
+    @Override
+    public Optional<Song> songByName(String name,Long idAlbum) {
+        return cancionCrudRepository.findByNombreAndIdAlbum(name,idAlbum).map(cancion->mapper.toSong(cancion));
+    }
 }

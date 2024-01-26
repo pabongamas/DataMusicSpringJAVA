@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.domain.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,25 @@ public class SongService {
 
     public List<Song> getAll(){
         return songRepository.getAll();
+    }
+
+    public Optional<Song> getSong(Long songId){
+        return songRepository.getSong(songId);
+    }
+    public List<Song> getSongsByAlbumId(Long albumId){
+        return songRepository.getSongsByAlbumId(albumId);
+    }
+    public List<Song> getSongsByGeneroId(Long genderId){
+        return songRepository.getSongsByGeneroId(genderId);
+    }
+    public List<Song> getSongsByArtistId(Long artistId){
+        return songRepository.getSongsByArtistId(artistId);
+    }
+    public Song save(Song song){
+        return songRepository.save(song);
+    }
+    public Optional<Song> getSongByName(String name,Long albumId){
+        return songRepository.songByName(name,albumId);
     }
 
 }

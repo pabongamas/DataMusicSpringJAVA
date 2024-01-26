@@ -62,11 +62,24 @@ CREATE TABLE ARTISTAS (
    insert into albums values(1,'Cosmos factory',1970,2);
    insert into albums values(2,'Pendulum',1970,2);
    insert into albums values(3,'No More Tears',1991,1);
+   insert into albums (nombre,anio,id_genero) values('El grito del tiempo ',1987,23);
+
    
    
    insert into ALBUMS_ARTISTA values(1,2);
    insert into ALBUMS_ARTISTA values(2,2);
    insert into ALBUMS_ARTISTA values(3,1);
+
+
+   insert into canciones (nombre,duracion,id_album) values('Me cuesta tanto olvidarte ',330,23);
+      insert into canciones (nombre,duracion,id_album) values('Ramble Tamble',330,1);
+       insert into canciones (nombre,duracion,id_album) values('Road to Nowhere',330,1);
+       insert into canciones (nombre,duracion,id_album) values('Mi ex tenia razon',330,7);
+       insert into canciones (nombre,duracion,id_album) values('Qlona',330,7);
+      insert into canciones (nombre,duracion,id_album) values('Cruz de navajas ',330,23);
+      insert into canciones (nombre,duracion,id_album) values('En algun lugar ',330,32);
+
+
    
    
    -- SE REINICIAN LAS SECUENCIAS SEGÚN LOS DATOS INICIALES
