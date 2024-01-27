@@ -12,7 +12,8 @@ public interface SongRepository {
      List<Song>getSongsByGeneroId(Long generoId);
      List<Song>getSongsByArtistId(Long artistId);
      Song save(Song song);
-     Optional<Song> songByName(String name,Long albumId);
+     Optional<Song> getSongByNameAndAlbumId(String name,Long albumId);
+     void delete(Long songId);
 
 
 

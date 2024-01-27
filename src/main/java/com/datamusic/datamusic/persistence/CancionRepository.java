@@ -59,7 +59,12 @@ public class CancionRepository implements SongRepository {
     }
 
     @Override
-    public Optional<Song> songByName(String name,Long idAlbum) {
+    public Optional<Song> getSongByNameAndAlbumId(String name,Long idAlbum) {
         return cancionCrudRepository.findByNombreAndIdAlbum(name,idAlbum).map(cancion->mapper.toSong(cancion));
+    }
+
+    @Override
+    public void delete(Long songId) {
+        cancionCrudRepository.deleteById(songId);
     }
 }

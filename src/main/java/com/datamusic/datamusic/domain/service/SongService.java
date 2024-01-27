@@ -33,8 +33,14 @@ public class SongService {
     public Song save(Song song){
         return songRepository.save(song);
     }
-    public Optional<Song> getSongByName(String name,Long albumId){
-        return songRepository.songByName(name,albumId);
+    public Optional<Song> getSongByNameAndAlbumId(String name,Long albumId){
+        return songRepository.getSongByNameAndAlbumId(name,albumId);
+    }
+    public boolean delete(Long songId){
+        return getSong(songId).map(song->{
+            songRepository.delete(songId);
+            return true;
+        }).orElse(false);
     }
 
 }

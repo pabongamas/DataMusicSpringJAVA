@@ -1,12 +1,11 @@
 package com.datamusic.datamusic.web.controller;
 
-import org.apache.catalina.connector.Response;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -112,14 +111,15 @@ public class CancionController {
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> save(@Valid @RequestBody Song song){
         try {
-            Optional<Song> validCancion=songService.getSongByName(song.getName(),song.getAlbumId());
-            if(validCancion.isPresent()){
-                Map<String, String> errors = new HashMap<String, String>();
-                errors.put("error", "La cancion "+song.getName()+" ya esta incluida en este album ");
-                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
-                        HttpStatus.BAD_REQUEST);
+            if(song.getSongId()==null){
+                Optional<Song> validCancion=songService.getSongByNameAndAlbumId(song.getName(),song.getAlbumId());
+                if(validCancion.isPresent()){
+                    Map<String, String> errors = new HashMap<String, String>();
+                    errors.put("error", "La cancion "+song.getName()+" ya esta incluida en este album ");
+                    return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                            HttpStatus.BAD_REQUEST);
+                }
             }
-
             Song songSaved=songService.save(song);
             ApiResponse response=new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("song", songSaved);
@@ -135,7 +135,20 @@ public class CancionController {
                     HttpStatus.CONFLICT);
         }
     }
-
-
-
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse>deleteSong(@PathVariable("id") Long songId){
+        try {
+            boolean songDeleted=songService.delete(songId);
+            if(songDeleted){
+                return new ResponseEntity<ApiResponse>(new ApiResponse(songDeleted, SUCCESSFUL_MESSAGE,null),HttpStatus.OK);
+            }
+            Map<String,String> errors=new HashMap<String,String>();
+            errors.put("error", NOT_FOUND_MESSAGE);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false,ERROR_MESSAGE, null, errors),HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", e.getMessage());
+            return new ResponseEntity<>(new ApiResponse(false, ERROR_MESSAGE, null, errors),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
