@@ -50,7 +50,44 @@ CREATE TABLE ARTISTAS (
     ON DELETE CASCADE
     ON UPDATE NO ACTION);
    
-   
+
+    CREATE TABLE USUARIOS (
+    "id_usuario" SERIAL NOT NULL,
+    "nombre" VARCHAR(255) NOT NULL,
+    "apellidos" VARCHAR(255) NOT NULL,
+    "correo_electronico" VARCHAR(255) NOT NULL,
+    "contraseña" VARCHAR(255) NOT NULL,
+    PRIMARY KEY ("id_usuario"));
+
+
+    CREATE TABLE PLAYLISTS (
+    "id_playlist" SERIAL NOT NULL,
+    "nombre" VARCHAR(255) NOT NULL,
+    "fecha_creacion" TIMESTAMP NOT NULL,
+    "id_usuario" INT NOT NULL,
+    PRIMARY KEY ("id_playlist"),
+       CONSTRAINT "fk_PLAYLISTS_USUARIOS"
+    FOREIGN KEY ("id_usuario")
+    REFERENCES USUARIOS ("id_usuario")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION);
+
+        
+    
+    CREATE TABLE  CANCIONES_PLAYLISTS (
+  "id_cancion" INT NOT NULL,
+  "id_playlist" INT NOT NULL,
+  PRIMARY KEY ("id_cancion", "id_playlist"),
+  CONSTRAINT "fk_CANCIONES_PLAYLISTS_CANCIONES1"
+    FOREIGN KEY ("id_cancion")
+    REFERENCES CANCIONES ("id_cancion")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_CANCIONES_PLAYLISTS_PLAYLISTS1"
+    FOREIGN KEY ("id_playlist")
+    REFERENCES PLAYLISTS ("id_playlist")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
    
    
    insert into generos values(1,'heavy metal');
