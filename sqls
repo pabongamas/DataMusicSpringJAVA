@@ -59,6 +59,11 @@ CREATE TABLE ARTISTAS (
     "contraseña" VARCHAR(255) NOT NULL,
     PRIMARY KEY ("id_usuario"));
 
+    alter table usuarios  rename contraseña to contrasena;
+
+    insert into usuarios (nombre,apellidos,correo_electronico,contrasena) values('Jhon jairo','Pabon gamas','pabongamas@gmail.com','$2a$10$kXaqm1ZVrer39FSfhHznvOc1L9bhm1fa12V6ftnrrxfR.gXsUlwgK'); 
+
+
 
     CREATE TABLE PLAYLISTS (
     "id_playlist" SERIAL NOT NULL,
