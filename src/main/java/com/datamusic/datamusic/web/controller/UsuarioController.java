@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +45,7 @@ public class UsuarioController {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de Usuarios"),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de Usuarios"+e.getMessage()),
                     HttpStatus.NOT_FOUND);
         }
     }
@@ -118,5 +119,23 @@ public class UsuarioController {
 
         }
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long idUser){
+        //aca falta implementar que no permita eliminar usuarios si el usuario esta siendo utilizado ejemplo como la relacion con playlists
+        try {
+            boolean userDeleted=userService.delete(idUser);
+            if(userDeleted){
+                return new ResponseEntity<ApiResponse>(new ApiResponse(userDeleted, SUCCESSFUL_MESSAGE,null),HttpStatus.OK);
+            }
+            Map<String,String> errors=new HashMap<String,String>();
+            errors.put("error", NOT_FOUND_MESSAGE);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            Map<String,String>errors=new HashMap<String,String>();
+            errors.put("error", e.getMessage());
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.CONFLICT);
+        }
+   }
 
 }

@@ -29,5 +29,12 @@ public class UserService {
         user.setPassword(hashedPassword);
         return userRepository.save(user);
     }
+    public boolean delete(Long userId) {
+        return getUserById(userId).map(user -> {
+            userRepository.delete(userId);
+            return true;
+        }).orElse(false);
+    }
+ 
 
 }

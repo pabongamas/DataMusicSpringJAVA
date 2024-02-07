@@ -37,5 +37,10 @@ public class UsuarioRepository implements UserRepository {
         Usuario usuario=mapper.toUsuario(user);
         return mapper.toUser(usuarioCrudRepository.save(usuario));
     }
+
+    @Override
+    public void delete(Long userId) {
+        usuarioCrudRepository.deleteById(userId);
+    }
     
 }
