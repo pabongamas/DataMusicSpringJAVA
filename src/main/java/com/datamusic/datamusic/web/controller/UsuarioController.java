@@ -131,7 +131,7 @@ public class UsuarioController {
             Map<String,String> errors=new HashMap<String,String>();
             errors.put("error", NOT_FOUND_MESSAGE);
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
+        } catch (SQLGrammarException e) {
             Map<String,String>errors=new HashMap<String,String>();
             errors.put("error", e.getMessage());
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.CONFLICT);

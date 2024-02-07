@@ -2,6 +2,10 @@ package com.datamusic.datamusic.web.controller.IO;
 
 import java.util.Map;
 import java.util.HashMap;
+
+import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.SQLGrammarException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -57,6 +61,33 @@ public class BaseController {
         return respuesta;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({ConstraintViolationException.class})
+    @ResponseBody
+    public ApiResponse handleExceptionConstraintViolationException(ConstraintViolationException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", e.getMessage());
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
+        return respuesta;
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({SQLGrammarException.class})
+    @ResponseBody
+    public ApiResponse handleExceptionSQLGrammarException(SQLGrammarException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", e.getMessage());
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
+        return respuesta;
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    @ResponseBody
+    public ApiResponse handleExceptionDataIntegrityViolationException(DataIntegrityViolationException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", e.getLocalizedMessage());
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido un error de violacion de integridad", null,errors);
+        return respuesta;
+    }
     
  
 }

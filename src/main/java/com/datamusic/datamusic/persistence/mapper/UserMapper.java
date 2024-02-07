@@ -9,7 +9,6 @@ import org.mapstruct.Mappings;
 
 import java.util.List;
 
-import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.User;
 import com.datamusic.datamusic.persistence.entity.Usuario;
 
