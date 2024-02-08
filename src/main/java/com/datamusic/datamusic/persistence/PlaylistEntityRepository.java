@@ -1,5 +1,6 @@
 package com.datamusic.datamusic.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,19 @@ public class PlaylistEntityRepository implements PlaylistRepository{
     @Override
     public Optional<Playlist> getPlaylist(Long playlistId) {
         return playlistCrudRepository.findById(playlistId).map(playlist->mapper.toPlaylist(playlist));
+    }
+
+    @Override
+    public Playlist save(Playlist playlist) {
+        PlaylistEntity PlaylistEntity=mapper.toPlaylistEntity(playlist);
+        PlaylistEntity.setFechaCreacion(LocalDateTime.now());
+        return mapper.toPlaylist(playlistCrudRepository.save(PlaylistEntity));
+
+    }
+
+    @Override
+    public void delete(Long playlistId) {
+        playlistCrudRepository.deleteById(playlistId);
     }
     
 }

@@ -22,5 +22,16 @@ public class PlaylistService {
     public Optional<Playlist> getPlaylistById(Long playlistId){
         return playlistRepository.getPlaylist(playlistId);
     }
+
+    public Playlist save(Playlist playlist){
+        return playlistRepository.save(playlist);
+    }
+
+    public boolean delete (Long PlaylistId){
+        return getPlaylistById(PlaylistId).map(playlist -> {
+            playlistRepository.delete(PlaylistId);
+            return true;
+        }).orElse(false);
+    }
     
 }

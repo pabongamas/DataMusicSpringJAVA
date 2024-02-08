@@ -10,4 +10,7 @@ public interface PlaylistRepository {
     List<Playlist> getAll();
 
     Optional<Playlist> getPlaylist(Long playlistId);
+
+    Playlist save(Playlist playlist);
+    void delete(Long playlistId);
 }

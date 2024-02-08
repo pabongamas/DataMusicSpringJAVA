@@ -1,5 +1,7 @@
 package com.datamusic.datamusic.persistence.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +23,7 @@ public class PlaylistEntity {
     private String nombre;
 
     @Column(name = "fecha_creacion")
-    private String fechaCreacion;
+    private LocalDateTime fechaCreacion;
 
     @Column(name = "id_usuario")
     private Long idUsuario;
@@ -47,11 +49,11 @@ public class PlaylistEntity {
         this.nombre = nombre;
     }
 
-    public String getFechaCreacion() {
+    public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(String fechaCreacion) {
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
