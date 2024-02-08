@@ -61,6 +61,7 @@ public class PlaylistsController {
             //iterator maneja colecciones de datos permitiendo validar si hay  registro siguiente para seguir recorriendo y con next para obtener el
             // siguiente valor , aca seteo la informacion de user null , porque como todas estas playlist pertenecen al mismo usuario seria 
             // muy redundante mostrar siempre el mismo nombre del usuario
+            
             Iterator<Playlist>iterator=playlistsByUser.iterator();
             while (iterator.hasNext()) {
                 Playlist dataPlaylist = iterator.next();
