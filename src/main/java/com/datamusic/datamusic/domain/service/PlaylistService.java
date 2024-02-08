@@ -14,24 +14,27 @@ public class PlaylistService {
     @Autowired
     private PlaylistRepository playlistRepository;
 
-
-    public List<Playlist>getAll(){
+    public List<Playlist> getAll() {
         return playlistRepository.getAll();
     }
 
-    public Optional<Playlist> getPlaylistById(Long playlistId){
+    public Optional<Playlist> getPlaylistById(Long playlistId) {
         return playlistRepository.getPlaylist(playlistId);
     }
 
-    public Playlist save(Playlist playlist){
+    public Playlist save(Playlist playlist) {
         return playlistRepository.save(playlist);
     }
 
-    public boolean delete (Long PlaylistId){
+    public boolean delete(Long PlaylistId) {
         return getPlaylistById(PlaylistId).map(playlist -> {
             playlistRepository.delete(PlaylistId);
             return true;
         }).orElse(false);
     }
-    
+
+    public List<Playlist> getPlaylistsByUser(Long idUser) {
+        return playlistRepository.getPlaylistByUser(idUser);
+    }
+
 }

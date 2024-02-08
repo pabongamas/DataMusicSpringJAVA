@@ -21,6 +21,7 @@ import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,6 +50,29 @@ public class PlaylistsController {
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de Usuarios"+e.getMessage()), HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping("user/{id}")
+    public ResponseEntity<ApiResponse> getPlaylistByUser(@PathVariable("id") Long idUser){
+        try {
+            List<Playlist> playlistsByUser=playlistService.getPlaylistsByUser(idUser);
+            // playlistsByUser.forEach(playlist->{
+            //     playlist.setUser(null);
+            // });
+            //iterator maneja colecciones de datos permitiendo validar si hay  registro siguiente para seguir recorriendo y con next para obtener el
+            // siguiente valor , aca seteo la informacion de user null , porque como todas estas playlist pertenecen al mismo usuario seria 
+            // muy redundante mostrar siempre el mismo nombre del usuario
+            Iterator<Playlist>iterator=playlistsByUser.iterator();
+            while (iterator.hasNext()) {
+                Playlist dataPlaylist = iterator.next();
+                dataPlaylist.setUser(null);
+            }
+            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            response.addData("playlists", playlistsByUser);
+            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @GetMapping("/{id}")

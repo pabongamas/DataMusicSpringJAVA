@@ -13,4 +13,5 @@ public interface PlaylistRepository {
 
     Playlist save(Playlist playlist);
     void delete(Long playlistId);
+    List<Playlist> getPlaylistByUser(Long idUser);
 }

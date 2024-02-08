@@ -46,5 +46,11 @@ public class PlaylistEntityRepository implements PlaylistRepository{
     public void delete(Long playlistId) {
         playlistCrudRepository.deleteById(playlistId);
     }
+
+    @Override
+    public List<Playlist> getPlaylistByUser(Long idUser) {
+       List<PlaylistEntity> playlistsByUser= (List<PlaylistEntity>) playlistCrudRepository.findByIdUsuario(idUser);
+       return mapper.toPlaylists(playlistsByUser);
+    }
     
 }

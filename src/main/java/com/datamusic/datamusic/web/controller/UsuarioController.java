@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datamusic.datamusic.domain.Playlist;
 import com.datamusic.datamusic.domain.User;
+import com.datamusic.datamusic.domain.service.PlaylistService;
 import com.datamusic.datamusic.domain.service.UserService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
@@ -35,6 +37,8 @@ public class UsuarioController {
     private static final String NOT_FOUND_MESSAGE = "Usuario No Encontrado";
     @Autowired
     private UserService userService;
+    @Autowired
+    private PlaylistService playlistService;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -45,7 +49,7 @@ public class UsuarioController {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de Usuarios"+e.getMessage()),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de Usuarios" + e.getMessage()),
                     HttpStatus.NOT_FOUND);
         }
     }
@@ -121,21 +125,30 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long idUser){
-        //aca falta implementar que no permita eliminar usuarios si el usuario esta siendo utilizado ejemplo como la relacion con playlists
+    public ResponseEntity<ApiResponse> delete(@PathVariable("id") Long idUser) {
         try {
-            boolean userDeleted=userService.delete(idUser);
-            if(userDeleted){
-                return new ResponseEntity<ApiResponse>(new ApiResponse(userDeleted, SUCCESSFUL_MESSAGE,null),HttpStatus.OK);
+            List<Playlist> playlistsByUser = playlistService.getPlaylistsByUser(idUser);
+            if (!playlistsByUser.isEmpty()) {
+                Map<String, String> errors = new HashMap<String, String>();
+                errors.put("error", "El usuario esta siendo utlizado , NO puede ser eliminado");
+                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                        HttpStatus.CONFLICT);
             }
-            Map<String,String> errors=new HashMap<String,String>();
+            boolean userDeleted = userService.delete(idUser);
+            if (userDeleted) {
+                return new ResponseEntity<ApiResponse>(new ApiResponse(userDeleted, SUCCESSFUL_MESSAGE, null),
+                        HttpStatus.OK);
+            }
+            Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", NOT_FOUND_MESSAGE);
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.NOT_FOUND);
         } catch (SQLGrammarException e) {
-            Map<String,String>errors=new HashMap<String,String>();
+            Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", e.getMessage());
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.CONFLICT);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.CONFLICT);
         }
-   }
+    }
 
 }
