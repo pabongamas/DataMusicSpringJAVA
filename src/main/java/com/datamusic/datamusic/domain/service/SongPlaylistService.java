@@ -18,4 +18,13 @@ public class SongPlaylistService {
     public List<SongPlaylist> getAll(){
         return songPlaylistRepository.getAll();
     }
+    public List<SongPlaylist> getSongPlaylistBySongId(Long songId){
+        return songPlaylistRepository.getSongPlaylistBySongId(songId);
+    }
+    public List<SongPlaylist> getSongPlaylistByPlaylistId(Long playlistId){
+        return songPlaylistRepository.getSongPlaylistByPlaylistId(playlistId);
+    }
+    public SongPlaylist saveSongPlaylist(SongPlaylist songPlaylist) {
+        return songPlaylistRepository.save(songPlaylist);
+    }
 }
