@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.datamusic.datamusic.domain.Playlist;
+import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.repository.PlaylistRepository;
 import com.datamusic.datamusic.persistence.crud.PlaylistCrudRepository;
 import com.datamusic.datamusic.persistence.entity.PlaylistEntity;
 import com.datamusic.datamusic.persistence.mapper.PlaylistMapper;
+import com.datamusic.datamusic.persistence.mapper.mappersSummary.PlaylistSongsSummaryMapper;
+
+import com.datamusic.datamusic.persistence.projection.PlaylistSongsSummary;
+
 
 @Repository
 public class PlaylistEntityRepository implements PlaylistRepository{
@@ -21,6 +26,9 @@ public class PlaylistEntityRepository implements PlaylistRepository{
 
     @Autowired
     private PlaylistMapper mapper;
+
+    @Autowired
+    private PlaylistSongsSummaryMapper mapperSummaryPlaylistSongs;
 
     @Override
     public List<Playlist> getAll() {
@@ -51,6 +59,12 @@ public class PlaylistEntityRepository implements PlaylistRepository{
     public List<Playlist> getPlaylistByUser(Long idUser) {
        List<PlaylistEntity> playlistsByUser= (List<PlaylistEntity>) playlistCrudRepository.findByIdUsuario(idUser);
        return mapper.toPlaylists(playlistsByUser);
+    }
+
+    @Override
+    public List<SummaryPlaylistSong> getSongs(Long idPlaylist) {
+        List<PlaylistSongsSummary> songs=(List<PlaylistSongsSummary>) playlistCrudRepository.findSummary(idPlaylist);
+        return mapperSummaryPlaylistSongs.toSummaryPlaylistsSong(songs);
     }
     
 }

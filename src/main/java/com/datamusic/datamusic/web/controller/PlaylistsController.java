@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Playlist;
 import com.datamusic.datamusic.domain.User;
+import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.service.PlaylistService;
 import com.datamusic.datamusic.domain.service.UserService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
@@ -128,6 +129,21 @@ public class PlaylistsController {
             errors.put("error",e.getMessage());
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null,errors),HttpStatus.CONFLICT);
         }
+    }
+
+    @GetMapping("songs/{id}")
+    public ResponseEntity<ApiResponse> getSongsSummary(@PathVariable("id") Long idPlaylist){
+        try {
+            List<SummaryPlaylistSong> songs=playlistService.getSongs(idPlaylist);
+          
+         
+            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            response.addData("songs", songs);
+            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
     }
     
 }

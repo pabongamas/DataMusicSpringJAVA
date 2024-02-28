@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.datamusic.datamusic.domain.Playlist;
+import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 
 public interface PlaylistRepository {
 
@@ -14,4 +15,5 @@ public interface PlaylistRepository {
     Playlist save(Playlist playlist);
     void delete(Long playlistId);
     List<Playlist> getPlaylistByUser(Long idUser);
+    List<SummaryPlaylistSong> getSongs(Long idPlaylist);
 }

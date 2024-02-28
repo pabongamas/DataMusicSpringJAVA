@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.datamusic.datamusic.domain.Playlist;
+import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.repository.PlaylistRepository;
 
 @Service
@@ -35,6 +36,10 @@ public class PlaylistService {
 
     public List<Playlist> getPlaylistsByUser(Long idUser) {
         return playlistRepository.getPlaylistByUser(idUser);
+    }
+
+    public List<SummaryPlaylistSong> getSongs(Long idPlaylist){
+        return playlistRepository.getSongs(idPlaylist);
     }
 
 }
