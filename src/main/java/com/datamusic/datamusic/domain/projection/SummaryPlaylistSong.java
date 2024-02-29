@@ -1,6 +1,5 @@
 package com.datamusic.datamusic.domain.projection;
 
-import com.datamusic.datamusic.domain.Album;
 
 public class SummaryPlaylistSong {
     private Long songId;
