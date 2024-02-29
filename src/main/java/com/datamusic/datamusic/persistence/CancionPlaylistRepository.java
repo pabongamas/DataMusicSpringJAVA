@@ -11,7 +11,6 @@ import com.datamusic.datamusic.domain.repository.SongPlaylistRepository;
 import com.datamusic.datamusic.persistence.crud.CancionCrudRepository;
 import com.datamusic.datamusic.persistence.crud.CancionPlaylistCrudRepository;
 import com.datamusic.datamusic.persistence.crud.PlaylistCrudRepository;
-import com.datamusic.datamusic.persistence.entity.AlbumsArtista;
 import com.datamusic.datamusic.persistence.entity.Cancion;
 import com.datamusic.datamusic.persistence.entity.CancionPlaylist;
 import com.datamusic.datamusic.persistence.entity.PlaylistEntity;

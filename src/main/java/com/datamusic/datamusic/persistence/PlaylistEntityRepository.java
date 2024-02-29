@@ -1,6 +1,7 @@
 package com.datamusic.datamusic.persistence;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,11 @@ public class PlaylistEntityRepository implements PlaylistRepository{
     @Override
     public List<SummaryPlaylistSong> getSongs(Long idPlaylist) {
         List<PlaylistSongsSummary> songs=(List<PlaylistSongsSummary>) playlistCrudRepository.findSummary(idPlaylist);
+        //  Iterator<PlaylistSongsSummary>iterator=songs.iterator();
+        //     while (iterator.hasNext()) {
+        //         PlaylistSongsSummary dataPlaylist = iterator.next();
+        //         System.out.println(dataPlaylist.getNombre_Album());
+        //     }
         return mapperSummaryPlaylistSongs.toSummaryPlaylistsSong(songs);
     }
     

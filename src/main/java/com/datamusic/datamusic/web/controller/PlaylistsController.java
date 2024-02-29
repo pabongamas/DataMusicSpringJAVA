@@ -131,7 +131,7 @@ public class PlaylistsController {
         }
     }
 
-    @GetMapping("songs/{id}")
+    @GetMapping("{id}/songs")
     public ResponseEntity<ApiResponse> getSongsSummary(@PathVariable("id") Long idPlaylist){
         try {
             List<SummaryPlaylistSong> songs=playlistService.getSongs(idPlaylist);

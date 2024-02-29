@@ -11,7 +11,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.repository.AlbumArtistRepository;
-import com.datamusic.datamusic.persistence.DTO.AlbumResponseDTO;
 import com.datamusic.datamusic.persistence.crud.AlbumArtistaCrudRepository;
 import com.datamusic.datamusic.persistence.crud.AlbumCrudRepository;
 import com.datamusic.datamusic.persistence.crud.ArtistaCrudRepository;
