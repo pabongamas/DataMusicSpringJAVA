@@ -14,6 +14,8 @@ public interface PlaylistSongsSummary {
 
     String getNombre_Album();
 
+    String getAnio_Album();
+
 
 
     

@@ -13,7 +13,7 @@ public interface PlaylistCrudRepository extends CrudRepository<PlaylistEntity, L
 
     List<PlaylistEntity> findByIdUsuario(Long idUser);
 
-    @Query(value = "select song.*,albums.id_album as id_album,albums.nombre as nombre_album from playlists join canciones_playlists using(id_playlist) join canciones song using(id_cancion) "+
+    @Query(value = "select song.*,albums.id_album as id_album,albums.nombre as nombre_album,albums.anio as anio_album from playlists join canciones_playlists using(id_playlist) join canciones song using(id_cancion) "+
     " join albums  using (id_album) where id_playlist=:playlistId ", nativeQuery = true)
     List<PlaylistSongsSummary> findSummary(@Param("playlistId") Long playlistId);
 

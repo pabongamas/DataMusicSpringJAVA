@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.datamusic.datamusic.domain.Playlist;
@@ -15,7 +17,7 @@ import com.datamusic.datamusic.persistence.crud.PlaylistCrudRepository;
 import com.datamusic.datamusic.persistence.entity.PlaylistEntity;
 import com.datamusic.datamusic.persistence.mapper.PlaylistMapper;
 import com.datamusic.datamusic.persistence.mapper.mappersSummary.PlaylistSongsSummaryMapper;
-
+import com.datamusic.datamusic.persistence.pageableAndSort.PlaylistPagSortRepository;
 import com.datamusic.datamusic.persistence.projection.PlaylistSongsSummary;
 
 
@@ -30,6 +32,10 @@ public class PlaylistEntityRepository implements PlaylistRepository{
 
     @Autowired
     private PlaylistSongsSummaryMapper mapperSummaryPlaylistSongs;
+
+    // para paginar info de playlist
+    @Autowired
+    private PlaylistPagSortRepository PlaylistPagSortRepository;
 
     @Override
     public List<Playlist> getAll() {
@@ -71,6 +77,12 @@ public class PlaylistEntityRepository implements PlaylistRepository{
         //         System.out.println(dataPlaylist.getNombre_Album());
         //     }
         return mapperSummaryPlaylistSongs.toSummaryPlaylistsSong(songs);
+    }
+
+    @Override
+    public Page<PlaylistSongsSummary> getSongsByPage(Long idPlaylist, Pageable pageable) {
+        Page<PlaylistSongsSummary> songs= PlaylistPagSortRepository.findPlaylistSongSummary(idPlaylist, pageable);
+        return songs;
     }
     
 }

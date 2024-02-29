@@ -4,11 +4,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.datamusic.datamusic.domain.Playlist;
 import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.repository.PlaylistRepository;
+import com.datamusic.datamusic.persistence.projection.PlaylistSongsSummary;
 
 @Service
 public class PlaylistService {
@@ -40,6 +45,12 @@ public class PlaylistService {
 
     public List<SummaryPlaylistSong> getSongs(Long idPlaylist){
         return playlistRepository.getSongs(idPlaylist);
+    }
+
+    public Page<PlaylistSongsSummary> getSongsPageable(Long idPlaylist,int page,int elements,String sortBy,String sortDirection){
+        Sort sort=Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest=PageRequest.of(page,elements,sort);
+        return playlistRepository.getSongsByPage(idPlaylist, pageRequest);
     }
 
 }

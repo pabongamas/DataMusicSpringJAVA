@@ -2,6 +2,7 @@ package com.datamusic.datamusic.web.controller;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Playlist;
@@ -17,6 +19,7 @@ import com.datamusic.datamusic.domain.User;
 import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.service.PlaylistService;
 import com.datamusic.datamusic.domain.service.UserService;
+import com.datamusic.datamusic.persistence.projection.PlaylistSongsSummary;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -145,5 +148,28 @@ public class PlaylistsController {
         }
 
     }
+    @GetMapping("{id}/songsPage")
+    public ResponseEntity<ApiResponse> getSongsSummaryPageable(@PathVariable("id") Long idPlaylist,@RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "2") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,
+    @RequestParam(defaultValue = "ASC") String sortDirection){
+        try {
+            Page<PlaylistSongsSummary> songs=playlistService.getSongsPageable(idPlaylist,page,elements,sortBy,sortDirection);
+            System.out.println(songs.getContent().get(0).getId_Genero());
+            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            response.addData("songs", songs);
+            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+        }catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+        }
+
+    }
+
     
+    // @GetMapping("/available")
+    // public ResponseEntity<Page<PizzaEntity>> getAvailable(@RequestParam(defaultValue = "0") int page,
+    //         @RequestParam(defaultValue = "8") int elements, @RequestParam(defaultValue = "price") String sortBy,
+    //         @RequestParam(defaultValue = "ASC") String sortDirection) {
+    //     Page<PizzaEntity> pizzas = this.pizzaService.getAvailable(page, elements, sortBy,sortDirection);
+    //     return ResponseEntity.ok(pizzas);
+    // }
 }

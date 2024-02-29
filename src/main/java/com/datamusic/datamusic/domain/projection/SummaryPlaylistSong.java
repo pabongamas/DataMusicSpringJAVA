@@ -12,6 +12,9 @@ public class SummaryPlaylistSong {
 
     private String nameAlbum;
 
+    private String yearAlbum;
+
+
 
     public Long getSongId() {
         return songId;
@@ -52,6 +55,16 @@ public class SummaryPlaylistSong {
     public void setNameAlbum(String nameAlbum) {
         this.nameAlbum = nameAlbum;
     }
+
+    public String getYearAlbum() {
+        return yearAlbum;
+    }
+
+    public void setYearAlbum(String yearAlbum) {
+        this.yearAlbum = yearAlbum;
+    }
+
+    
 
    
 

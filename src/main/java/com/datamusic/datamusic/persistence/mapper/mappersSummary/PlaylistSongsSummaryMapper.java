@@ -17,9 +17,15 @@ public interface PlaylistSongsSummaryMapper {
             @Mapping(source = "id_Album", target = "albumId"),
             @Mapping(source = "id_Cancion", target = "songId"),
             @Mapping(source = "nombre_Album", target = "nameAlbum"),
+            @Mapping(source = "anio_Album", target = "yearAlbum"),
     })
     SummaryPlaylistSong toSummaryPlaylistSong(PlaylistSongsSummary playlistSongsSummary);
 
     List<SummaryPlaylistSong> toSummaryPlaylistsSong(List<PlaylistSongsSummary> playlistSongsSummary);
+
+
+   
+    // Page<SummaryPlaylistSong> toSummaryPlaylistsSongPageable(Page<PlaylistSongsSummary> playlistSongsSummary);
+
 
 }
