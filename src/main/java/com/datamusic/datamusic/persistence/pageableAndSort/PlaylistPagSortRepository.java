@@ -12,8 +12,8 @@ import com.datamusic.datamusic.persistence.projection.PlaylistSongsSummary;
 
 public interface PlaylistPagSortRepository extends ListPagingAndSortingRepository<PlaylistEntity, Long> {
 
-    @Query(value = "select song.*,albums.id_album as id_album,albums.nombre as nombre_album,albums.anio as anio_album,albums.id_genero from playlists join canciones_playlists using(id_playlist) join canciones song using(id_cancion) "
+    @Query(value = "select song.*,album.nombre as nombre_album,album.anio as anio_album,album.id_genero from playlists join canciones_playlists using(id_playlist) join canciones song using(id_cancion) "
             +
-            " join albums  using (id_album) where id_playlist=:playlistId ", nativeQuery = true)
+            " join albums as album  using (id_album) where id_playlist=:playlistId ", nativeQuery = true)
     Page<PlaylistSongsSummary> findPlaylistSongSummary(@Param("playlistId") Long playlistId, Pageable pageable);
 }

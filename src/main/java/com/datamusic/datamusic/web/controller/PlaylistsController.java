@@ -150,13 +150,16 @@ public class PlaylistsController {
     }
     @GetMapping("{id}/songsPage")
     public ResponseEntity<ApiResponse> getSongsSummaryPageable(@PathVariable("id") Long idPlaylist,@RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "2") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,
+    @RequestParam(defaultValue = "1") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,
     @RequestParam(defaultValue = "ASC") String sortDirection){
         try {
             Page<PlaylistSongsSummary> songs=playlistService.getSongsPageable(idPlaylist,page,elements,sortBy,sortDirection);
-            System.out.println(songs.getContent().get(0).getId_Genero());
             ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
-            response.addData("songs", songs);
+            response.addData("songs", songs.getContent());
+            response.addData("pageable", songs.getPageable());
+            response.addData("totalElements", songs.getTotalElements());
+            response.addData("elementsByPage", songs.getSize());
+            response.addData("totalPages", songs.getTotalPages());
             return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
