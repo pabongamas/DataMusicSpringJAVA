@@ -3,11 +3,13 @@ package com.datamusic.datamusic.web.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +19,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.service.AlbumService;
+import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -34,6 +40,12 @@ public class AlbumController {
     private static final String NOT_FOUND_MESSAGE = "Album No Encontrado";
     @Autowired
     private AlbumService albumService;
+
+    @Autowired
+    private SaveFileService saveFileService;
+
+    @Value("${upload.directory}")
+    private String uploadDirectory;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -87,6 +99,38 @@ public class AlbumController {
 
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("album", albumsaved);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
+        } catch (SQLGrammarException ex) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "El genero con id " + album.getGenderId() + " no se encuentra registrado",
+                            null),
+                    HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping("/saveWithImage")
+    public ResponseEntity<ApiResponse> saveWithImage(@Valid @RequestPart("album") Album album,
+                                       @RequestPart("image") MultipartFile image) throws IOException {
+        System.out.println(image);
+        try {
+            Album albumsaved = albumService.save(album);
+            // Album albumsaved = album;
+
+            // String uploadDirectory ="src/main/resources/static/images/ads";
+            String uploadDirectory =this.uploadDirectory+"/images/album/";
+
+            String nameImgSaved=saveFileService.saveImageToStorage(uploadDirectory, image);
+
+            //actualizo el ablum creado con la ruta de la imagen guardada
+            albumsaved.setNameFile(nameImgSaved);
+            Album albumsavedWithImg = albumService.save(albumsaved);
+            albumsavedWithImg.setNameFile(null);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("album", albumsavedWithImg);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(

@@ -21,6 +21,8 @@ public class Album {
     private Gender gender;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<AlbumArtist> artists;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String nameFile;
 
     public Long getAlbumId() {
         return albumId;
@@ -70,4 +72,12 @@ public class Album {
         this.artists = artists;
     }
 
+    public String getNameFile() {
+        return nameFile;
+    }
+
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
+    
 }

@@ -23,6 +23,8 @@ public interface AlbumMapper {
       @Mapping(source = "genero.nombre", target = "gender.name"),
       @Mapping(target = "gender.album", ignore = true),
       @Mapping(source = "artistas", target = "artists"),
+      @Mapping(source = "nombreArchivo", target = "nameFile"),
+
 
   })
   Album toAlbum(AlbumEntity albumEntity);
