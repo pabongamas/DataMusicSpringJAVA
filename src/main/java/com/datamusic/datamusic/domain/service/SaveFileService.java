@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class SaveFileService {
 
+    //guardar imagen en un directorio local
     public String saveImageToStorage(String uploadDirectory, MultipartFile imageFile) throws IOException {
         //asigno nombre unico , donde me concatena UUID aleatorio con el nombre original de la imagen
         String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
@@ -27,5 +28,27 @@ public class SaveFileService {
 
         Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFileName;
+    }
+
+    public byte[] getImage(String imageDirectory,String imageName) throws IOException{
+        Path imagePath=Path.of(imageDirectory,imageName);
+
+        if(Files.exists(imagePath)){
+            byte[] imageBytes=Files.readAllBytes(imagePath);
+            return imageBytes;
+        }else{
+            return null;
+        }
+    }
+
+    public boolean deleteImage(String imageDirectory, String imageName) throws IOException{
+        Path imagePath=Path.of(imageDirectory,imageName);
+
+        if (Files.exists(imagePath)) {
+            Files.delete(imagePath);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

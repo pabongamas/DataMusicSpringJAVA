@@ -23,6 +23,8 @@ public class Album {
     private List<AlbumArtist> artists;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nameFile;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private byte[] imgAlbum;
 
     public Long getAlbumId() {
         return albumId;
@@ -79,5 +81,16 @@ public class Album {
     public void setNameFile(String nameFile) {
         this.nameFile = nameFile;
     }
+
+    public byte[] getImgAlbum() {
+        return imgAlbum;
+    }
+
+    public void setImgAlbum(byte[] imgAlbum) {
+        this.imgAlbum = imgAlbum;
+    }
+
+
+    
     
 }
