@@ -10,9 +10,13 @@ import java.util.HashMap;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +43,7 @@ public class AlbumController {
     private static final String ERROR_MESSAGE = "Han ocurrido errores";
     private static final String SUCCESSFUL_MESSAGE = "Operación exitosa";
     private static final String NOT_FOUND_MESSAGE = "Album No Encontrado";
+    private static final String NOT_FOUND_IMAGE_MESSAGE = "Imagen del album No Encontrada";
     @Autowired
     private AlbumService albumService;
 
@@ -72,7 +77,7 @@ public class AlbumController {
                     HttpStatus.NOT_FOUND);
         }
     }
-    //ESTE METODO ES EL MISMO DE ARRIBA SOLO QUE PAGINADO CON PAGEABLE
+    // ESTE METODO ES EL MISMO DE ARRIBA SOLO QUE PAGINADO CON PAGEABLE
     // EN ESTE METODO RETORNO UN OBJETO DE PAGE CON EL MAPEO DE ALBUM ENTITY A ALBUM
     // se puede ver el codigo en el metodo getAllByPage del archivo
     // AlbumEntityRepository
@@ -102,9 +107,47 @@ public class AlbumController {
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", e.getMessage());
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums ", null,errors),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums ", null, errors),
                     HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> getAlbumsSummaryPageable(@PathVariable("id") Long idAlbum) throws IOException {
+        Optional<Album> albumById = albumService.getAlbumById(idAlbum);
+        if (albumById.isPresent()) {
+            Album album = albumById.get();
+            if (album.getNameFile() != null) {
+                String nameImgAlbum = album.getNameFile();
+                String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+                byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
+                
+                ByteArrayResource resource = new ByteArrayResource(imgBytesAlbum);
+                ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+
+                response.addData("album", album);
+                // response.addData("imgs", imagesByteList);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .contentLength(resource.contentLength())
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                ContentDisposition.attachment()
+                                        .filename(nameImgAlbum)
+                                        .build().toString())
+                        .body(resource);
+            }
+
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("imgAlbum", NOT_FOUND_IMAGE_MESSAGE);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                HttpStatus.NOT_FOUND);
+        }
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", NOT_FOUND_MESSAGE);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                HttpStatus.NOT_FOUND);
+
     }
 
     @GetMapping("/{id}")
@@ -121,13 +164,13 @@ public class AlbumController {
                 // MapImgAlbum.put("album_"+album.getAlbumId(),imgBytesAlbum);
                 // imagesByteList.add(MapImgAlbum);
                 album.setImgAlbum(imgBytesAlbum);
+                ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+
+                response.addData("album", album);
+                response.addData("route",uploadDirectory+""+nameImgAlbum);
+                // response.addData("imgs", imagesByteList);
+                return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
             }
-
-            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
-
-            response.addData("album", album);
-            // response.addData("imgs", imagesByteList);
-            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("error", NOT_FOUND_MESSAGE);
