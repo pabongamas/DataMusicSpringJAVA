@@ -87,7 +87,7 @@ public class PlaylistsController {
         if (playlistById.isPresent()) {
             Playlist playlist=playlistById.get();
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
-            response.addData("user", playlist);
+            response.addData("playlist", playlist);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }else{
             Map<String,String>errors=new HashMap<String,String>();
