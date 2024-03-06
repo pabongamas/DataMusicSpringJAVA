@@ -79,4 +79,13 @@ public class AlbumEntityRepository implements AlbumRepository {
         //  Esto permitirá devolver una página paginada de objetos Album.
         return new PageImpl<>(albumMapPageable, pageable, listAlbumsByPage.getTotalElements());
     }
+
+    @Override
+    public Page<Album> getAlbumsByGenderByPage(Long genderId, Pageable pageable) {
+        Page<AlbumEntity> listAlbumsByPage = albumPagSortRepository.findByIdGenero(genderId,pageable);
+        List<AlbumEntity> contentAlbums = listAlbumsByPage.getContent();
+        List<Album> albumMapPageable = mapper.toAlbum(contentAlbums);
+        return new PageImpl<>(albumMapPageable, pageable, listAlbumsByPage.getTotalElements());
+
+     }
 }

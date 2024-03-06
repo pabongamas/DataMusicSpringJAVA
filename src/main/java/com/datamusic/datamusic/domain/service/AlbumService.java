@@ -41,26 +41,34 @@ public class AlbumService {
 
     public boolean delete(Long albumId) {
         return getAlbumById(albumId).map(album -> {
-        //   List<AlbumArtist> artistsByAlbum = albumArtistRepository.getAlbumArtistByAlbumId(albumId);
-        //     if (!artistsByAlbum.isEmpty()) {
-        //         throw new ResponseStatusException(
-        //                 HttpStatus.CONFLICT, "El album " + album.getName()
-        //                         + " esta siendo ocupado por algun artista , por lo cual no puede ser eliminado.");
-        //     }
+            // List<AlbumArtist> artistsByAlbum =
+            // albumArtistRepository.getAlbumArtistByAlbumId(albumId);
+            // if (!artistsByAlbum.isEmpty()) {
+            // throw new ResponseStatusException(
+            // HttpStatus.CONFLICT, "El album " + album.getName()
+            // + " esta siendo ocupado por algun artista , por lo cual no puede ser
+            // eliminado.");
+            // }
             albumRepository.delete(albumId);
             return true;
         }).orElse(false);
     }
 
-    public List<AlbumArtist>getartistsByAlbum(Long albumId){
+    public List<AlbumArtist> getartistsByAlbum(Long albumId) {
         List<AlbumArtist> artistsByAlbum = albumArtistRepository.getAlbumArtistByAlbumId(albumId);
         return artistsByAlbum;
     }
-    //pageable 
+    // pageable
 
-    public Page<Album> getAllByPage(int page,int elements,String sortBy,String sortDirection) {
-           Sort sort=Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageRequest=PageRequest.of(page,elements,sort);
+    public Page<Album> getAllByPage(int page, int elements, String sortBy, String sortDirection) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest = PageRequest.of(page, elements, sort);
         return albumRepository.getAllByPage(pageRequest);
+    }
+
+    public Page<Album> getAlbumsByGenderByPage(Long genderId,int page, int elements, String sortBy, String sortDirection) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest = PageRequest.of(page, elements, sort);
+        return albumRepository.getAlbumsByGenderByPage(genderId,pageRequest);
     }
 }

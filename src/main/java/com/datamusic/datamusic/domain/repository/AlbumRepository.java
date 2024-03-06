@@ -15,4 +15,6 @@ public interface  AlbumRepository {
     void delete(Long albumId);
     List<Album>getAlbumsByGender(Long genderId);
     Page<Album>getAllByPage(Pageable pageable);
+    Page<Album>getAlbumsByGenderByPage(Long genderId,Pageable pageable);
+
 }

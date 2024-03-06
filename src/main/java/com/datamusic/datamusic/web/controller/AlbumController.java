@@ -113,7 +113,7 @@ public class AlbumController {
     }
 
     @GetMapping("/{id}/image")
-    public ResponseEntity<?> getAlbumsSummaryPageable(@PathVariable("id") Long idAlbum) throws IOException {
+    public ResponseEntity<?> getImageAlbum(@PathVariable("id") Long idAlbum) throws IOException {
         Optional<Album> albumById = albumService.getAlbumById(idAlbum);
         if (albumById.isPresent()) {
             Album album = albumById.get();
@@ -197,6 +197,36 @@ public class AlbumController {
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
                     new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums Por el genero", null),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/genderByPage/{id}")
+    public ResponseEntity<ApiResponse> getAlbumByGenderIdByPage(@PathVariable("id") Long genderId,@RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
+    @RequestParam(defaultValue = "ASC") String sortDirection) {
+
+        try {
+            Page<Album> albumsByGender = albumService.getAlbumsByGenderByPage(genderId,page, elements, sortBy, sortDirection);
+            for (Album album : albumsByGender) {
+                if (album.getNameFile() != null) {
+                    String nameImgAlbum = album.getNameFile();
+                    String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+                    byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
+                    album.setImgAlbum(imgBytesAlbum);
+                }
+            }
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("albums", albumsByGender.getContent());
+            response.addData("pageable", albumsByGender.getPageable());
+            response.addData("totalElements", albumsByGender.getTotalElements());
+            response.addData("elementsByPage", albumsByGender.getSize());
+            response.addData("totalPages", albumsByGender.getTotalPages());
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            Map<String,String>errores=new HashMap<String,String>();
+            errores.put("error", e.getMessage());
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums Por el genero", null,errores),
                     HttpStatus.NOT_FOUND);
         }
     }
