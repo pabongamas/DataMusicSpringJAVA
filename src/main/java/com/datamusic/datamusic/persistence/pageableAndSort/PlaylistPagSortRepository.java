@@ -16,4 +16,6 @@ public interface PlaylistPagSortRepository extends ListPagingAndSortingRepositor
             +
             " join albums as album  using (id_album) where id_playlist=:playlistId ", nativeQuery = true)
     Page<PlaylistSongsSummary> findPlaylistSongSummary(@Param("playlistId") Long playlistId, Pageable pageable);
+
+    Page<PlaylistEntity> findByIdUsuario(Long idUser, Pageable pageable);
 }

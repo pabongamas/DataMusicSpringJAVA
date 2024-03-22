@@ -5,6 +5,10 @@ import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.datamusic.datamusic.domain.User;
@@ -34,6 +38,12 @@ public class UserService {
             userRepository.delete(userId);
             return true;
         }).orElse(false);
+    }
+
+    public Page<User> getAllByPage(int page,int elements,String sortBy,String sortDirection) {
+          Sort sort=Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest=PageRequest.of(page, elements, sort);
+        return userRepository.getAllPage(pageRequest);
     }
  
 

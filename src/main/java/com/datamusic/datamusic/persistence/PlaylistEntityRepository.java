@@ -7,13 +7,16 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.Playlist;
 import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.repository.PlaylistRepository;
 import com.datamusic.datamusic.persistence.crud.PlaylistCrudRepository;
+import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 import com.datamusic.datamusic.persistence.entity.PlaylistEntity;
 import com.datamusic.datamusic.persistence.mapper.PlaylistMapper;
 import com.datamusic.datamusic.persistence.mapper.mappersSummary.PlaylistSongsSummaryMapper;
@@ -83,6 +86,22 @@ public class PlaylistEntityRepository implements PlaylistRepository{
     public Page<PlaylistSongsSummary> getSongsByPage(Long idPlaylist, Pageable pageable) {
         Page<PlaylistSongsSummary> songs= PlaylistPagSortRepository.findPlaylistSongSummary(idPlaylist, pageable);
         return songs;
+    }
+
+    @Override
+    public Page<Playlist> getPlaylistPageable(Pageable pageable) {
+         Page<PlaylistEntity> playlistsByPage=PlaylistPagSortRepository.findAll(pageable);
+         List<PlaylistEntity>contentPlaylists = playlistsByPage.getContent();
+         List<Playlist> playlistMapPageable= mapper.toPlaylists(contentPlaylists);
+         return new PageImpl<>(playlistMapPageable, pageable, playlistsByPage.getTotalElements());
+    }
+
+    @Override
+    public Page<Playlist> getPlaylistByUser(Long idUser, Pageable pageable) {
+        Page<PlaylistEntity> playlistByUser=PlaylistPagSortRepository.findByIdUsuario(idUser,pageable);
+        List<PlaylistEntity>contentPlaylistsByUser=playlistByUser.getContent();
+        List<Playlist> playlistsMapPageable=mapper.toPlaylists(contentPlaylistsByUser);
+        return new PageImpl<>(playlistsMapPageable, pageable,playlistByUser.getTotalElements());
     }
     
 }

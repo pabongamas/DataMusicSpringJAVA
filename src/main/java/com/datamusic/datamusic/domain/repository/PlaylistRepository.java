@@ -21,4 +21,8 @@ public interface PlaylistRepository {
     List<Playlist> getPlaylistByUser(Long idUser);
     List<SummaryPlaylistSong> getSongs(Long idPlaylist);
     Page<PlaylistSongsSummary> getSongsByPage(Long idPlaylist,Pageable pageable);
+    Page<Playlist> getPlaylistPageable(Pageable pageable);
+    Page<Playlist> getPlaylistByUser(Long idUser,Pageable pageable);
+
+
 }

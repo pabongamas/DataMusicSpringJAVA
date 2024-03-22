@@ -53,4 +53,17 @@ public class PlaylistService {
         return playlistRepository.getSongsByPage(idPlaylist, pageRequest);
     }
 
+
+    public Page<Playlist> getPlaylistsPageable(int page,int elements,String sortBy,String sortDirection){
+        Sort sort=Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest=PageRequest.of(page, elements, sort);
+        return playlistRepository.getPlaylistPageable(pageRequest);
+    }
+
+    public Page<Playlist> getPlaylistsByUserPageable(Long idUser,int page,int elements,String sortBy,String sortDirection){
+        Sort sort=Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageRequest=PageRequest.of(page, elements, sort);
+        return playlistRepository.getPlaylistByUser(idUser,pageRequest);
+    }
+
 }

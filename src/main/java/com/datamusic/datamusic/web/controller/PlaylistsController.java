@@ -37,7 +37,7 @@ public class PlaylistsController {
     @Autowired
     private PlaylistService playlistService;
 
-    @Autowired 
+    @Autowired
     UserService userService;
 
     private static final String ERROR_MESSAGE = "Han ocurrido errores";
@@ -45,134 +45,197 @@ public class PlaylistsController {
     private static final String NOT_FOUND_MESSAGE = "Playlist No Encontrada";
 
     @GetMapping("/all")
-    public ResponseEntity<ApiResponse> getAll(){
+    public ResponseEntity<ApiResponse> getAll() {
         try {
-            List<Playlist>playlists=playlistService.getAll();
-            ApiResponse response=new ApiResponse(true, SUCCESSFUL_MESSAGE);
-            response.addData("playlists",playlists);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            List<Playlist> playlists = playlistService.getAll();
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("playlists", playlists);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de Usuarios"+e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de Usuarios" + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("user/{id}")
-    public ResponseEntity<ApiResponse> getPlaylistByUser(@PathVariable("id") Long idUser){
+    public ResponseEntity<ApiResponse> getPlaylistByUser(@PathVariable("id") Long idUser) {
         try {
-            List<Playlist> playlistsByUser=playlistService.getPlaylistsByUser(idUser);
+            List<Playlist> playlistsByUser = playlistService.getPlaylistsByUser(idUser);
             // playlistsByUser.forEach(playlist->{
-            //     playlist.setUser(null);
+            // playlist.setUser(null);
             // });
-            //iterator maneja colecciones de datos permitiendo validar si hay  registro siguiente para seguir recorriendo y con next para obtener el
-            // siguiente valor , aca seteo la informacion de user null , porque como todas estas playlist pertenecen al mismo usuario seria 
+            // iterator maneja colecciones de datos permitiendo validar si hay registro
+            // siguiente para seguir recorriendo y con next para obtener el
+            // siguiente valor , aca seteo la informacion de user null , porque como todas
+            // estas playlist pertenecen al mismo usuario seria
             // muy redundante mostrar siempre el mismo nombre del usuario
-            
-            Iterator<Playlist>iterator=playlistsByUser.iterator();
+
+            Iterator<Playlist> iterator = playlistsByUser.iterator();
             while (iterator.hasNext()) {
                 Playlist dataPlaylist = iterator.next();
                 dataPlaylist.setUser(null);
             }
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("playlists", playlistsByUser);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las Playlist " + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
         }
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getPlaylistById(@PathVariable("id") Long playlistId){
-        Optional<Playlist>playlistById= playlistService.getPlaylistById(playlistId);
+    public ResponseEntity<ApiResponse> getPlaylistById(@PathVariable("id") Long playlistId) {
+        Optional<Playlist> playlistById = playlistService.getPlaylistById(playlistId);
 
         if (playlistById.isPresent()) {
-            Playlist playlist=playlistById.get();
+            Playlist playlist = playlistById.get();
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("playlist", playlist);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
-        }else{
-            Map<String,String>errors=new HashMap<String,String>();
+        } else {
+            Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", NOT_FOUND_MESSAGE);
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
-            HttpStatus.NOT_FOUND);
+                    HttpStatus.NOT_FOUND);
 
         }
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> savePlaylist(@Valid @RequestBody Playlist playlist){
+    public ResponseEntity<ApiResponse> savePlaylist(@Valid @RequestBody Playlist playlist) {
         try {
-            Optional<User> userExists=userService.getUserById(playlist.getIdUser());
-            if(!userExists.isPresent()){
-                Map<String,String> errors=new HashMap<String,String>();
-                errors.put("error","el Usuario a vincular en la Playlist no fue encontrado");
-                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),HttpStatus.NOT_FOUND);
+            Optional<User> userExists = userService.getUserById(playlist.getIdUser());
+            if (!userExists.isPresent()) {
+                Map<String, String> errors = new HashMap<String, String>();
+                errors.put("error", "el Usuario a vincular en la Playlist no fue encontrado");
+                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                        HttpStatus.NOT_FOUND);
             }
-            Playlist playlistCreated=playlistService.save(playlist);
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            Playlist playlistCreated = playlistService.save(playlist);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("playlist", playlistCreated);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.CREATED);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
-          return new ResponseEntity<ApiResponse>(new ApiResponse(false,"Error de gramática SQL:" + ex.getSQLException()),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse> deletePlaylist(@PathVariable("id") Long playlistId){
+    public ResponseEntity<ApiResponse> deletePlaylist(@PathVariable("id") Long playlistId) {
         try {
-            boolean playlistDeleted=playlistService.delete(playlistId);
-            if(playlistDeleted){
-                return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE,null),HttpStatus.OK);
-            }else{
-                Map<String,String> errors=new HashMap<String,String>();
+            boolean playlistDeleted = playlistService.delete(playlistId);
+            if (playlistDeleted) {
+                return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE, null), HttpStatus.OK);
+            } else {
+                Map<String, String> errors = new HashMap<String, String>();
                 errors.put("error", NOT_FOUND_MESSAGE);
-                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                        HttpStatus.NOT_FOUND);
             }
         } catch (SQLGrammarException e) {
-            Map<String,String> errors=new HashMap<String,String>();
-            errors.put("error",e.getMessage());
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null,errors),HttpStatus.CONFLICT);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("error", e.getMessage());
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping("{id}/songs")
-    public ResponseEntity<ApiResponse> getSongsSummary(@PathVariable("id") Long idPlaylist){
+    public ResponseEntity<ApiResponse> getSongsSummary(@PathVariable("id") Long idPlaylist) {
         try {
-            List<SummaryPlaylistSong> songs=playlistService.getSongs(idPlaylist);
-          
-         
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            List<SummaryPlaylistSong> songs = playlistService.getSongs(idPlaylist);
+
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songs", songs);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las Playlist " + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
         }
 
     }
+
     @GetMapping("{id}/songsPage")
-    public ResponseEntity<ApiResponse> getSongsSummaryPageable(@PathVariable("id") Long idPlaylist,@RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "1") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,
-    @RequestParam(defaultValue = "ASC") String sortDirection){
+    public ResponseEntity<ApiResponse> getSongsSummaryPageable(@PathVariable("id") Long idPlaylist,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
         try {
-            Page<PlaylistSongsSummary> songs=playlistService.getSongsPageable(idPlaylist,page,elements,sortBy,sortDirection);
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            Page<PlaylistSongsSummary> songs = playlistService.getSongsPageable(idPlaylist, page, elements, sortBy,
+                    sortDirection);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songs", songs.getContent());
             response.addData("pageable", songs.getPageable());
             response.addData("totalElements", songs.getTotalElements());
             response.addData("elementsByPage", songs.getSize());
             response.addData("totalPages", songs.getTotalPages());
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false,"No se ha Recuperado la informac&oacute; de las Playlist "+e.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las Playlist " + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
         }
 
     }
 
-    
-    // @GetMapping("/available")
-    // public ResponseEntity<Page<PizzaEntity>> getAvailable(@RequestParam(defaultValue = "0") int page,
-    //         @RequestParam(defaultValue = "8") int elements, @RequestParam(defaultValue = "price") String sortBy,
-    //         @RequestParam(defaultValue = "ASC") String sortDirection) {
-    //     Page<PizzaEntity> pizzas = this.pizzaService.getAvailable(page, elements, sortBy,sortDirection);
-    //     return ResponseEntity.ok(pizzas);
-    // }
+    // METODO IGUAL AL DE LISTAR PERO CON PAGINACION
+    @GetMapping("/all/pageable")
+    public ResponseEntity<ApiResponse> getPlaylistsPageable(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
+
+        try {
+            Page<Playlist> playlists = playlistService.getPlaylistsPageable(page, elements, sortBy, sortDirection);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("playlists", playlists.getContent());
+            response.addData("pageable", playlists.getPageable());
+            response.addData("totalElements", playlists.getTotalElements());
+            response.addData("elementsByPage", playlists.getSize());
+            response.addData("totalPages", playlists.getTotalPages());
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las Playlist " + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
+
+        }
+
+    }
+
+    @GetMapping("user/{id}/pageable")
+    public ResponseEntity<ApiResponse> getPlaylistByUserPageable(@PathVariable("id") Long idUser,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
+        try {
+            Page<Playlist> playlistsByUserPageable = playlistService.getPlaylistsByUserPageable(idUser, page, elements,
+                    sortBy, sortDirection);
+            List<Playlist> listPlaylist = playlistsByUserPageable.getContent();
+            Iterator<Playlist> iteratorPlaylist = listPlaylist.iterator();
+            while (iteratorPlaylist.hasNext()) {
+                Playlist dataPlaylist = iteratorPlaylist.next();
+                dataPlaylist.setUser(null);
+
+            }
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("playlists", listPlaylist);
+            response.addData("pageable", playlistsByUserPageable.getPageable());
+            response.addData("totalElements", playlistsByUserPageable.getTotalElements());
+            response.addData("elementsByPage", playlistsByUserPageable.getSize());
+            response.addData("totalPages", playlistsByUserPageable.getTotalPages());
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las Playlist " + e.getMessage()),
+                    HttpStatus.NOT_FOUND);
+        }
+
+    }
 }
