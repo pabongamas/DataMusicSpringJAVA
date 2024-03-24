@@ -12,6 +12,8 @@ public interface UserRepository {
     List<User> getAll();
 
     Optional<User> getUserById(Long idUser);
+    Optional<User> getUserByEmail(String email);
+
 
     User save(User user);
     void delete(Long userId);

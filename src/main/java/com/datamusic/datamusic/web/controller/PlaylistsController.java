@@ -2,6 +2,7 @@ package com.datamusic.datamusic.web.controller;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -128,6 +129,12 @@ public class PlaylistsController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deletePlaylist(@PathVariable("id") Long playlistId) {
+
+        //verifico si una playlist tiene canciones 
+        List<SummaryPlaylistSong> songs = playlistService.getSongs(playlistId);
+        if(!songs.isEmpty()){
+             throw new DataIntegrityViolationException("No se puede eliminar esta playlist porque tiene canciones asociadas a ella.");
+        }
         try {
             boolean playlistDeleted = playlistService.delete(playlistId);
             if (playlistDeleted) {
@@ -162,7 +169,7 @@ public class PlaylistsController {
 
     }
 
-    @GetMapping("{id}/songsPage")
+    @GetMapping("{id}/songs/pageable")
     public ResponseEntity<ApiResponse> getSongsSummaryPageable(@PathVariable("id") Long idPlaylist,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "song.nombre") String sortBy,

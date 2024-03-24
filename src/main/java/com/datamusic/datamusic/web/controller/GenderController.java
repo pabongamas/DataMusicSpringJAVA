@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Album;
@@ -108,5 +110,26 @@ public class GenderController {
             errors.put("error", e.getMessage());
             return new ResponseEntity<>(new ApiResponse(false, ERROR_MESSAGE, null, errors),HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/all/pageable")
+    public ResponseEntity<ApiResponse> GetAllPageable(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection){
+
+                try {
+                    Page<Gender> genders = genderService.GetAllPageable(page, elements, sortBy, sortDirection);
+                    ApiResponse response = new ApiResponse(true,SUCCESSFUL_MESSAGE);
+                    response.addData("genders", genders.getContent());
+                    response.addData("pageable", genders.getPageable());
+                    response.addData("totalElements", genders.getTotalElements());
+                    response.addData("elementsByPage", genders.getSize());
+                    response.addData("totalPages", genders.getTotalPages());
+                    return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ApiResponse(false, "No se ha Recuperado la informac&oacute; de generos"));
+                }
+
     }
 }

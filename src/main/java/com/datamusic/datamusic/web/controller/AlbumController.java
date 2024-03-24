@@ -2,7 +2,11 @@ package com.datamusic.datamusic.web.controller;
 
 import java.util.List;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
+
 import java.util.Map;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +36,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.service.AlbumService;
+import com.datamusic.datamusic.domain.service.ImageProcess;
 import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
+
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 import jakarta.validation.Valid;
 
@@ -49,6 +57,9 @@ public class AlbumController {
 
     @Autowired
     private SaveFileService saveFileService;
+
+    @Autowired
+    private ImageProcess imageProcess;
 
     @Value("${upload.directory}")
     private String uploadDirectory;
@@ -121,7 +132,7 @@ public class AlbumController {
                 String nameImgAlbum = album.getNameFile();
                 String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
                 byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
-                
+
                 ByteArrayResource resource = new ByteArrayResource(imgBytesAlbum);
                 ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
 
@@ -141,7 +152,7 @@ public class AlbumController {
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("imgAlbum", NOT_FOUND_IMAGE_MESSAGE);
             return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
-                HttpStatus.NOT_FOUND);
+                    HttpStatus.NOT_FOUND);
         }
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("error", NOT_FOUND_MESSAGE);
@@ -153,24 +164,29 @@ public class AlbumController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId) throws IOException {
         Optional<Album> albumById = albumService.getAlbumById(albumId);
+        System.out.println(albumById.get().getName());
         if (albumById.isPresent()) {
             Album album = albumById.get();
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("album", album);
             if (album.getNameFile() != null) {
                 String nameImgAlbum = album.getNameFile();
                 String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
                 // List<Map<String, byte[]>> imagesByteList = new ArrayList<>();
+                System.out.println(uploadDirectory+""+nameImgAlbum);
                 byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
                 // Map<String, byte[]>MapImgAlbum = new HashMap<>();
                 // MapImgAlbum.put("album_"+album.getAlbumId(),imgBytesAlbum);
                 // imagesByteList.add(MapImgAlbum);
                 album.setImgAlbum(imgBytesAlbum);
-                ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+                List<Map<String,Object>> colorsImg=imageProcess.colorsOfImage(uploadDirectory+""+nameImgAlbum,5);
 
-                response.addData("album", album);
-                response.addData("route",uploadDirectory+""+nameImgAlbum);
+                response.addData("route", uploadDirectory + "" + nameImgAlbum);
+                response.addData("colors", colorsImg);
                 // response.addData("imgs", imagesByteList);
-                return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+               
             }
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("error", NOT_FOUND_MESSAGE);
@@ -200,13 +216,16 @@ public class AlbumController {
                     HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/genderByPage/{id}")
-    public ResponseEntity<ApiResponse> getAlbumByGenderIdByPage(@PathVariable("id") Long genderId,@RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
-    @RequestParam(defaultValue = "ASC") String sortDirection) {
+    public ResponseEntity<ApiResponse> getAlbumByGenderIdByPage(@PathVariable("id") Long genderId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
 
         try {
-            Page<Album> albumsByGender = albumService.getAlbumsByGenderByPage(genderId,page, elements, sortBy, sortDirection);
+            Page<Album> albumsByGender = albumService.getAlbumsByGenderByPage(genderId, page, elements, sortBy,
+                    sortDirection);
             for (Album album : albumsByGender) {
                 if (album.getNameFile() != null) {
                     String nameImgAlbum = album.getNameFile();
@@ -223,10 +242,11 @@ public class AlbumController {
             response.addData("totalPages", albumsByGender.getTotalPages());
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
-            Map<String,String>errores=new HashMap<String,String>();
+            Map<String, String> errores = new HashMap<String, String>();
             errores.put("error", e.getMessage());
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums Por el genero", null,errores),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums Por el genero", null,
+                            errores),
                     HttpStatus.NOT_FOUND);
         }
     }

@@ -32,10 +32,15 @@ public class UsuarioRepository implements UserRepository {
        List<Usuario> usuarios=(List<Usuario>) usuarioCrudRepository.findAll();
        return mapper.toUser(usuarios);
     }
+  
 
     @Override
     public Optional<User> getUserById(Long idUser) {
         return usuarioCrudRepository.findById(idUser).map(user->mapper.toUser(user));
+    }
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return usuarioCrudRepository.findByCorreoElectronico(email).map(user->mapper.toUser(user));
     }
 
     @Override
@@ -56,5 +61,7 @@ public class UsuarioRepository implements UserRepository {
        List<User> listUserMapped=mapper.toUser(listUsuario);
        return new PageImpl<>(listUserMapped, pageable,userByPage.getTotalElements());
     }
+
+   
     
 }

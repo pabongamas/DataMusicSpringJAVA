@@ -14,6 +14,8 @@ public class ApiResponse {
     private Map<String, Object> data;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, String> errors;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<String, Object> errorsObject;
     public Date date;
     public ApiResponse() {
     }
@@ -43,6 +45,13 @@ public class ApiResponse {
         this.data = data;
         this.date = new Date();
         this.errors=errors;
+    }
+    public ApiResponse(boolean state,String message, Map<String, Object> data,Map<String, String> errors,Map<String, Object> errorsObject) {
+        this.state=state;
+        this.message = message;
+        this.data = data;
+        this.date = new Date();
+        this.errorsObject=errorsObject;
     }
 
 
@@ -91,6 +100,15 @@ public class ApiResponse {
     public void setErrors(Map<String, String> errors) {
         this.errors = errors;
     }
+
+    public Map<String, Object> getErrorsObject() {
+        return errorsObject;
+    }
+
+    public void setErrorsObject(Map<String, Object> errorsObject) {
+        this.errorsObject = errorsObject;
+    }
+    
     
     
     

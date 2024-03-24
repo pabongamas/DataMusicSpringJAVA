@@ -76,7 +76,7 @@ public class UsuarioController {
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> save(@Valid @RequestBody User user) {
         try {
-            User userCreated = userService.saveUser(user);
+            User userCreated = userService.saveUser(user,true);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("user", userCreated);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
@@ -100,13 +100,10 @@ public class UsuarioController {
                 if (updatedUser.getLastnames() != null) {
                     userExisting.setLastnames(updatedUser.getLastnames());
                 }
-                if (updatedUser.getEmail() != null) {
-                    userExisting.setEmail(updatedUser.getEmail());
-                }
                 if (updatedUser.getPassword() != null) {
                     userExisting.setPassword(updatedUser.getPassword());
                 }
-                User userUpdated = userService.saveUser(userExisting);
+                User userUpdated = userService.saveUser(userExisting,false);
                 ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
                 response.addData("user", userUpdated);
                 return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);

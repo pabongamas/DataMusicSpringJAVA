@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,15 +18,21 @@ import com.datamusic.datamusic.persistence.crud.GeneroCrudRepository;
 import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 import com.datamusic.datamusic.persistence.entity.Genero;
 import com.datamusic.datamusic.persistence.mapper.GenderMapper;
+import com.datamusic.datamusic.persistence.pageableAndSort.GenderPagSortRepository;
 
 @Repository
 public class GeneroRepository implements GenderRepository {
 
     @Autowired
     private GeneroCrudRepository generoCrudRepository;
+    
+    @Autowired
+    private GenderPagSortRepository genderPagSortRepository;
+
 
     @Autowired
     private AlbumCrudRepository albumCrudRepository;
+
 
     @Autowired
     private GenderMapper mapper;
@@ -73,6 +82,15 @@ public class GeneroRepository implements GenderRepository {
     public List<Gender> getGenerosByNombre(String nombre) {
         List<Genero> generos = (List<Genero>) generoCrudRepository.findByNombre(nombre);
         return mapper.toGenders(generos);
+    }
+
+    @Override
+    public Page<Gender> getAllPageable(Pageable pageable) {
+       Page<Genero> generosByPage=genderPagSortRepository.findAll(pageable);
+       List<Genero>generosByList=generosByPage.getContent();
+       List<Gender>gendersPageable=mapper.toGenders(generosByList);
+       return new PageImpl<>(gendersPageable, pageable, generosByPage.getTotalElements());
+
     }
 
 }

@@ -7,12 +7,14 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.ServletException;
@@ -85,7 +87,25 @@ public class BaseController {
     public ApiResponse handleExceptionDataIntegrityViolationException(DataIntegrityViolationException e) {
         Map<String, String> errors = new HashMap<String, String>();
         errors.put("error", e.getLocalizedMessage());
-        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido un error de violacion de integridad", null,errors);
+        ApiResponse respuesta = new ApiResponse(false, "Ha ocurrido un error de violacion de integridad", null,errors);
+        return respuesta;
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ResponseBody
+    public ApiResponse handleExceptionDataHttp(HttpMessageNotReadableException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error","No ha enviado en el payload de la request la información o la informacion tiene un mal formato.");
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
+        return respuesta;
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    @ResponseBody
+    public ApiResponse MethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error","Falta el parametro "+e.getName()+" de tipo "+e.getRequiredType().getSimpleName()+" para el endpoint "+e.getValue());
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
         return respuesta;
     }
     
