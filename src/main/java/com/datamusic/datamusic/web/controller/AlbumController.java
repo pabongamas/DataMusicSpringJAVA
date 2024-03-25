@@ -67,6 +67,10 @@ public class AlbumController {
     @Value("${upload.directory.albums}")
     private String uploadDirectoryAlbums;
 
+    @Value("${upload.directory.albums.thumbs}")
+    private String uploadDirectoryAlbumsThumbs;
+    
+
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
         try {
@@ -172,16 +176,20 @@ public class AlbumController {
             if (album.getNameFile() != null) {
                 String nameImgAlbum = album.getNameFile();
                 String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+                String uploadDirectoryThumb = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
+
                 // List<Map<String, byte[]>> imagesByteList = new ArrayList<>();
-                System.out.println(uploadDirectory+""+nameImgAlbum);
                 byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
                 // Map<String, byte[]>MapImgAlbum = new HashMap<>();
                 // MapImgAlbum.put("album_"+album.getAlbumId(),imgBytesAlbum);
                 // imagesByteList.add(MapImgAlbum);
                 album.setImgAlbum(imgBytesAlbum);
+
+                //obtener colores principales de la imagen del album
                 List<Map<String,Object>> colorsImg=imageProcess.colorsOfImage(uploadDirectory+""+nameImgAlbum,5);
 
                 response.addData("route", uploadDirectory + "" + nameImgAlbum);
+                response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
                 response.addData("colors", colorsImg);
                 // response.addData("imgs", imagesByteList);
                
@@ -283,6 +291,10 @@ public class AlbumController {
 
             String nameImgSaved = saveFileService.saveImageToStorage(uploadDirectory, image);
 
+            //PATH OF THUMBNAILS
+            String uploadDirectoryThumbsAlbum = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
+            imageProcess.generateThumbnailOfImage(uploadDirectory+""+nameImgSaved,uploadDirectoryThumbsAlbum);
+
             // actualizo el ablum creado con la ruta de la imagen guardada
             albumsaved.setNameFile(nameImgSaved);
             Album albumsavedWithImg = albumService.save(albumsaved);
@@ -341,7 +353,10 @@ public class AlbumController {
                 if (nameFile != "") {
                     // String uploadDirectory ="src/main/resources/static/images/ads";
                     String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+                    String uploadDirectoryThumb=this.uploadDirectory+""+this.uploadDirectoryAlbumsThumbs;
                     boolean nameImgSaved = saveFileService.deleteImage(uploadDirectory, nameFile);
+                    boolean thumbSaved=saveFileService.deleteImage(uploadDirectoryThumb, nameFile);
+
                 }
                 return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE, null, null),
                         HttpStatus.OK);

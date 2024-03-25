@@ -1,9 +1,13 @@
 package com.datamusic.datamusic.domain.service;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,6 +71,41 @@ public class ImageProcess {
         } catch (IOException e) {
         }
         return colors;
+    }
+
+    public void generateThumbnailOfImage(String pathImage, String uploadDirectoryThumbsAlbum) {
+        try {
+            // Cargar la imagen original
+            File file = new File(pathImage);
+            BufferedImage originalImage = ImageIO.read(file);
+
+            // Definir el tamaño de la miniatura
+            int thumbnailWidth = 100;
+            int thumbnailHeight = 100;
+
+            // Crear una nueva imagen con el tamaño de la miniatura
+            Image thumbnail = originalImage.getScaledInstance(thumbnailWidth, thumbnailHeight, Image.SCALE_SMOOTH);
+            BufferedImage bufferedThumbnail = new BufferedImage(thumbnailWidth, thumbnailHeight,
+                    BufferedImage.TYPE_INT_RGB);
+
+            // Dibujar la miniatura en el BufferedImage
+            Graphics2D g2d = bufferedThumbnail.createGraphics();
+            g2d.drawImage(thumbnail, 0, 0, null);
+            g2d.dispose();
+
+            // Guardar la miniatura
+
+            //Creo el directorio por si no esta
+            Path uploadPathAlbumThumb = Path.of(uploadDirectoryThumbsAlbum);
+            if (!Files.exists(uploadPathAlbumThumb)) {
+                Files.createDirectories(uploadPathAlbumThumb);
+            }
+
+            File thumbnailFile = new File(uploadDirectoryThumbsAlbum + file.getName());
+            ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
     }
 
     private static Map<Integer, Integer> getColorFrequency(BufferedImage image) {
