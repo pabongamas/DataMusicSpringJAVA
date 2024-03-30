@@ -8,6 +8,7 @@ import org.hibernate.exception.SQLGrammarException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.servlet.ServletException;
@@ -108,6 +110,16 @@ public class BaseController {
         ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
         return respuesta;
     }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({BadCredentialsException.class})
+    @ResponseBody
+    public ApiResponse BadCredentialsException(BadCredentialsException e) {
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error","Las credenciales son incorrectas");
+        ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
+        return respuesta;
+    }
+    
     
  
 }

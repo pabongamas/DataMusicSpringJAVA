@@ -1,11 +1,17 @@
 package com.datamusic.datamusic.persistence.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 
 @Entity
 @Table(name = "usuarios")
@@ -24,6 +30,9 @@ public class Usuario {
     private String correoElectronico;
 
     private String contrasena;
+
+   @OneToMany(mappedBy = "usuario",fetch = FetchType.EAGER)
+    private List<UsuarioRol> roles;
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -64,5 +73,15 @@ public class Usuario {
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }
+
+    public List<UsuarioRol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UsuarioRol> roles) {
+        this.roles = roles;
+    }
+
+    
 
 }

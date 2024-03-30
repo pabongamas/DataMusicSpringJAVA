@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Playlist;
-import com.datamusic.datamusic.domain.User;
+import com.datamusic.datamusic.domain.UserEntity;
 import com.datamusic.datamusic.domain.projection.SummaryPlaylistSong;
 import com.datamusic.datamusic.domain.service.PlaylistService;
 import com.datamusic.datamusic.domain.service.UserService;
@@ -109,7 +109,7 @@ public class PlaylistsController {
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> savePlaylist(@Valid @RequestBody Playlist playlist) {
         try {
-            Optional<User> userExists = userService.getUserById(playlist.getIdUser());
+            Optional<UserEntity> userExists = userService.getUserById(playlist.getIdUser());
             if (!userExists.isPresent()) {
                 Map<String, String> errors = new HashMap<String, String>();
                 errors.put("error", "el Usuario a vincular en la Playlist no fue encontrado");

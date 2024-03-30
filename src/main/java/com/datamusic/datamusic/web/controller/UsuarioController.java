@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.Playlist;
-import com.datamusic.datamusic.domain.User;
+import com.datamusic.datamusic.domain.UserEntity;
 import com.datamusic.datamusic.domain.service.PlaylistService;
 import com.datamusic.datamusic.domain.service.UserService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
@@ -44,7 +44,7 @@ public class UsuarioController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
         try {
-            List<User> users = userService.getAll();
+            List<UserEntity> users = userService.getAll();
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("users", users);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
@@ -57,10 +57,10 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getUserById(@PathVariable("id") long idUser) {
-        Optional<User> userById = userService.getUserById(idUser);
+        Optional<UserEntity> userById = userService.getUserById(idUser);
 
         if (userById.isPresent()) {
-            User user = userById.get();
+            UserEntity user = userById.get();
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("user", user);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
@@ -74,9 +74,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> save(@Valid @RequestBody User user) {
+    public ResponseEntity<ApiResponse> save(@Valid @RequestBody UserEntity user) {
         try {
-            User userCreated = userService.saveUser(user,true);
+            UserEntity userCreated = userService.saveUser(user,true);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("user", userCreated);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
@@ -89,11 +89,11 @@ public class UsuarioController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<ApiResponse> save(@PathVariable("id") Long idUser, @RequestBody User updatedUser) {
+    public ResponseEntity<ApiResponse> save(@PathVariable("id") Long idUser, @RequestBody UserEntity updatedUser) {
         try {
-            Optional<User> userById = userService.getUserById(idUser);
+            Optional<UserEntity> userById = userService.getUserById(idUser);
             if (userById.isPresent()) {
-                User userExisting = userById.get();
+                UserEntity userExisting = userById.get();
                 if (updatedUser.getName() != null) {
                     userExisting.setName(updatedUser.getName());
                 }
@@ -103,7 +103,7 @@ public class UsuarioController {
                 if (updatedUser.getPassword() != null) {
                     userExisting.setPassword(updatedUser.getPassword());
                 }
-                User userUpdated = userService.saveUser(userExisting,false);
+                UserEntity userUpdated = userService.saveUser(userExisting,false);
                 ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
                 response.addData("user", userUpdated);
                 return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
@@ -157,7 +157,7 @@ public class UsuarioController {
             @RequestParam(defaultValue = "ASC") String sortDirection) {
 
         try {
-            Page<User> usersPageable=userService.getAllByPage(page,elements,sortBy,sortDirection);
+            Page<UserEntity> usersPageable=userService.getAllByPage(page,elements,sortBy,sortDirection);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("users", usersPageable.getContent());
             response.addData("pageable", usersPageable.getPageable());

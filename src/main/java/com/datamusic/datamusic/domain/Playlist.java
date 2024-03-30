@@ -18,7 +18,7 @@ public class Playlist {
     @NotNull(message = "El id del usuario no debe ser nulo")
     private Long idUser;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private User user;
+    private UserEntity user;
 
     public Long getIdPlaylist() {
         return idPlaylist;
@@ -52,11 +52,11 @@ public class Playlist {
         this.idUser = idUser;
     }
 
-    public User getUser() {
+    public UserEntity getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserEntity user) {
         this.user = user;
     }
 

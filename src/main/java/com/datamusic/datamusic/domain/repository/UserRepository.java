@@ -6,18 +6,18 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.datamusic.datamusic.domain.User;
+import com.datamusic.datamusic.domain.UserEntity;
 
 public interface UserRepository {
-    List<User> getAll();
+    List<UserEntity> getAll();
 
-    Optional<User> getUserById(Long idUser);
-    Optional<User> getUserByEmail(String email);
+    Optional<UserEntity> getUserById(Long idUser);
+    Optional<UserEntity> getUserByEmail(String email);
 
 
-    User save(User user);
+    UserEntity save(UserEntity user);
     void delete(Long userId);
 
     //metodos para paginar
-    Page<User> getAllPage(Pageable pageable);
+    Page<UserEntity> getAllPage(Pageable pageable);
 }

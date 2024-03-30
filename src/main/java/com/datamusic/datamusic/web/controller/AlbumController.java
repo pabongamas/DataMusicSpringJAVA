@@ -168,7 +168,6 @@ public class AlbumController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId) throws IOException {
         Optional<Album> albumById = albumService.getAlbumById(albumId);
-        System.out.println(albumById.get().getName());
         if (albumById.isPresent()) {
             Album album = albumById.get();
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);

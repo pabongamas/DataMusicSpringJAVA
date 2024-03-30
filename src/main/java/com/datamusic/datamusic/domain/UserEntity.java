@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class User {
+import java.util.List;
+
+public class UserEntity {
 
     private Long idUser;
     @NotNull(message = "El nombre no debe ser nulo")
@@ -23,6 +25,8 @@ public class User {
     @NotBlank(message = "La Contraseña no debe ir vacio")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<UserRol> rols;
 
     public Long getIdUser() {
         return idUser;
@@ -63,5 +67,15 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public List<UserRol> getRols() {
+        return rols;
+    }
+
+    public void setRols(List<UserRol> rols) {
+        this.rols = rols;
+    }
+
+    
 
 }
