@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,13 +22,16 @@ import com.datamusic.datamusic.persistence.entity.AlbumsArtista;
 import com.datamusic.datamusic.persistence.entity.AlbumsArtistaPK;
 import com.datamusic.datamusic.persistence.entity.Artista;
 import com.datamusic.datamusic.persistence.mapper.AlbumArtistMapMapper;
-
+import com.datamusic.datamusic.persistence.pageableAndSort.AlbumArtistaPagSortRepository;
 
 @Repository
 public class AlbumArtistaRepository implements AlbumArtistRepository {
 
     @Autowired
     private AlbumArtistaCrudRepository albumArtistaCrudRepository;
+
+    @Autowired
+    private AlbumArtistaPagSortRepository albumArtistaPagSortRepository;
 
     @Autowired
     private AlbumCrudRepository albumCrudRepository;
@@ -40,6 +46,14 @@ public class AlbumArtistaRepository implements AlbumArtistRepository {
     public List<AlbumArtist> getAll() {
         List<AlbumsArtista> albumsArtista = (List<AlbumsArtista>) albumArtistaCrudRepository.findAll();
         return mapperMap.toAlbumArtistMap(albumsArtista);
+    }
+
+    @Override
+    public Page<AlbumArtist> getAllByPage(Pageable pageable) {
+        Page<AlbumsArtista> albumsArtistaAllByPage = albumArtistaPagSortRepository.findAll(pageable);
+        List<AlbumsArtista> albumsArtistaList=albumsArtistaAllByPage.getContent();
+        List<AlbumArtist> albumArtistAllByPageMap=mapperMap.toAlbumArtistMap(albumsArtistaList);
+        return new PageImpl<>(albumArtistAllByPageMap, pageable,albumsArtistaAllByPage.getTotalElements());
     }
 
     @Override
@@ -97,7 +111,8 @@ public class AlbumArtistaRepository implements AlbumArtistRepository {
 
     @Override
     public List<AlbumArtist> getAlbumArtistByAlbumIdAndArtistId(Long idAlbum, Long idArtist) {
-        List<AlbumsArtista> albumsArtista = (List<AlbumsArtista>) albumArtistaCrudRepository.findByIdIdAlbumAndIdIdArtista(idAlbum, idArtist);
+        List<AlbumsArtista> albumsArtista = (List<AlbumsArtista>) albumArtistaCrudRepository
+                .findByIdIdAlbumAndIdIdArtista(idAlbum, idArtist);
         return mapperMap.toAlbumArtistMap(albumsArtista);
     }
 

@@ -30,26 +30,43 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(customizeRequests -> {
                     customizeRequests
+                    //authentication
                             .requestMatchers("/auth/**").permitAll()
+                            //users
                             .requestMatchers("/users/**").hasRole("ADMIN")
-                            .requestMatchers("/genders/**").hasAnyRole("MEMBER_PREMIUM",
+                            //generos
+                            .requestMatchers(HttpMethod.POST,"/genders/save").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,"/genders/delete/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET,"/genders/**").hasAnyRole("MEMBER_PREMIUM",
                              "ADMIN")
+                             //playlists
                              .requestMatchers("/playlists/**").hasAnyRole("MEMBER_NORMAL","MEMBER_PREMIUM",
                              "ADMIN")
+                             //albums
                              .requestMatchers("/albums/delete/**").hasRole("ARTIST")
-                             .requestMatchers("/albums/all").hasAnyRole("MEMBER_NORMAL","MEMBER_PREMIUM",
-                             "ADMIN","ARTIST")
-                             .requestMatchers("/albums/{id}").hasAnyRole("MEMBER_NORMAL","MEMBER_PREMIUM",
-                             "ADMIN","ARTIST")
+                             .requestMatchers(HttpMethod.POST,"/albums/save").hasRole("ARTIST")
                              .requestMatchers(HttpMethod.POST,"/albums/saveWithImage").hasRole("ARTIST")
+                             .requestMatchers(HttpMethod.GET,"/albums/**").hasAnyRole("MEMBER_NORMAL","MEMBER_PREMIUM",
+                             "ADMIN")
                              .requestMatchers("/albums/**").hasRole("ARTIST")
-                             .requestMatchers("/albums/**").hasRole("ARTIST")
+                             //artists_albums
+                             .requestMatchers("/albumsArtist/**").hasRole("ARTIST")
+                             //artists
+                             .requestMatchers(HttpMethod.POST,"/artists/save").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.DELETE,"/artists/delete/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.GET,"/artists/**").hasAnyRole("MEMBER_PREMIUM",
+                              "ADMIN","ARTIST")
+                              //songs
+                              //artists
+                             .requestMatchers(HttpMethod.POST,"/songs/save").hasAnyRole("ADMIN","ARTIST")
+                             .requestMatchers(HttpMethod.DELETE,"/songs/delete/**").hasAnyRole("ADMIN","ARTIST")
+                             .requestMatchers(HttpMethod.GET,"/songs/**").hasAnyRole("MEMBER_PREMIUM",
+                              "ADMIN","ARTIST")
                             .anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // //
-                                                                                                        // .httpBasic(Customizer.withDefaults())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // //agregar filtro de autehnticacion por JWT PRINCIPALMENTE
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

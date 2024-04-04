@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
+import com.datamusic.datamusic.domain.Artist;
 import com.datamusic.datamusic.domain.service.AlbumService;
 import com.datamusic.datamusic.domain.service.ImageProcess;
 import com.datamusic.datamusic.domain.service.SaveFileService;
@@ -69,7 +70,6 @@ public class AlbumController {
 
     @Value("${upload.directory.albums.thumbs}")
     private String uploadDirectoryAlbumsThumbs;
-    
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -184,15 +184,22 @@ public class AlbumController {
                 // imagesByteList.add(MapImgAlbum);
                 album.setImgAlbum(imgBytesAlbum);
 
-                //obtener colores principales de la imagen del album
-                List<Map<String,Object>> colorsImg=imageProcess.colorsOfImage(uploadDirectory+""+nameImgAlbum,5);
+                // obtener colores principales de la imagen del album
+                List<Map<String, Object>> colorsImg = imageProcess.colorsOfImage(uploadDirectory + "" + nameImgAlbum,
+                        5);
 
                 response.addData("route", uploadDirectory + "" + nameImgAlbum);
                 response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
                 response.addData("colors", colorsImg);
                 // response.addData("imgs", imagesByteList);
-               
+
             }
+            //con este puedo crear  una sequencia de datos y procesarla ahi mismo y retornar una nueva data 
+            // como lo asigne
+            List<AlbumArtist> listArtists = album.getArtists();
+            String[] namesArtists = listArtists.stream().map(AlbumArtist::getArtist).map(Artist::getName)
+                    .toArray(String[]::new);
+            response.addData("artists", namesArtists);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
         Map<String, String> errors = new HashMap<String, String>();
@@ -290,9 +297,9 @@ public class AlbumController {
 
             String nameImgSaved = saveFileService.saveImageToStorage(uploadDirectory, image);
 
-            //PATH OF THUMBNAILS
+            // PATH OF THUMBNAILS
             String uploadDirectoryThumbsAlbum = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
-            imageProcess.generateThumbnailOfImage(uploadDirectory+""+nameImgSaved,uploadDirectoryThumbsAlbum);
+            imageProcess.generateThumbnailOfImage(uploadDirectory + "" + nameImgSaved, uploadDirectoryThumbsAlbum);
 
             // actualizo el ablum creado con la ruta de la imagen guardada
             albumsaved.setNameFile(nameImgSaved);
@@ -352,9 +359,9 @@ public class AlbumController {
                 if (nameFile != "") {
                     // String uploadDirectory ="src/main/resources/static/images/ads";
                     String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
-                    String uploadDirectoryThumb=this.uploadDirectory+""+this.uploadDirectoryAlbumsThumbs;
+                    String uploadDirectoryThumb = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
                     boolean nameImgSaved = saveFileService.deleteImage(uploadDirectory, nameFile);
-                    boolean thumbSaved=saveFileService.deleteImage(uploadDirectoryThumb, nameFile);
+                    boolean thumbSaved = saveFileService.deleteImage(uploadDirectoryThumb, nameFile);
 
                 }
                 return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE, null, null),

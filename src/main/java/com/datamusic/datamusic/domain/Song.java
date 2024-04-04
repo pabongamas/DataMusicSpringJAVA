@@ -13,6 +13,7 @@ public class Song {
     @NotNull(message = "La duracion no debe ser nula")
     private Long duration;
     @NotNull(message = "El albumId no debe ser nulo")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long albumId;
      @JsonInclude(JsonInclude.Include.NON_NULL)
     private Album album;

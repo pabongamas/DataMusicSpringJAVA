@@ -13,16 +13,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.datamusic.datamusic.domain.Album;
+import com.datamusic.datamusic.domain.AlbumArtist;
+import com.datamusic.datamusic.domain.Artist;
+import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.Song;
 import com.datamusic.datamusic.domain.service.SongService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/songs")
@@ -67,8 +75,17 @@ public class CancionController {
     public ResponseEntity<ApiResponse> getSongsByAlbumId(@PathVariable("id") Long albumId){
         try {
             List<Song> songsByAlbumId = songService.getSongsByAlbumId(albumId);
+            Iterator<Song>songsIterator= songsByAlbumId.iterator();
+            Album album=new Album();
+            while (songsIterator.hasNext()) {
+                Song song=songsIterator.next();
+                album=song.getAlbum();
+                song.setAlbum(null);
+                song.setAlbumId(null);
+            }
             ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
             response.addData("songsByAlbum",songsByAlbumId);
+            response.addData("album", album);
             return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
 
         } catch (Exception e) {
@@ -82,8 +99,17 @@ public class CancionController {
     public ResponseEntity<ApiResponse> getSongsByGenderId(@PathVariable("id") Long genderId){
         try {
             List<Song> songsByGenderId = songService.getSongsByGeneroId(genderId);
+            Iterator<Song>songsIterator= songsByGenderId.iterator();
+            Gender gender=new Gender ();
+            while (songsIterator.hasNext()) {
+                Song song=songsIterator.next();
+                gender=song.getAlbum().getGender();
+                song.setAlbum(null);
+                song.setAlbumId(null);
+            }
             ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
             response.addData("songsByGender",songsByGenderId);
+            response.addData("gender", gender);
             return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
 
         } catch (Exception e) {
@@ -98,8 +124,22 @@ public class CancionController {
     public ResponseEntity<ApiResponse> getSongsByArtist(@PathVariable("id") Long artistId){
         try {
             List<Song>songsByArtistId=songService.getSongsByArtistId(artistId);
+            Iterator<Song> iteratorSong=songsByArtistId.iterator();
+            List<Artist>artists=new ArrayList<Artist>();
+            while (iteratorSong.hasNext()) {
+                Song song=iteratorSong.next();
+                song.getAlbum().getArtists().stream().map(AlbumArtist::getArtist)
+                .forEach(artist->{
+                    if(!artists.contains(artist)){
+                      artists.add(artist);
+                    }
+                });
+                song.setAlbum(null);
+                // song.getAlbum().setArtists(null);
+            }
             ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
             response.addData("songsByArtist",songsByArtistId);
+            response.addData("artists", artists);
             return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
             
         } catch (Exception e) {

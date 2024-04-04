@@ -46,4 +46,42 @@ public class Artist {
     // this.albumsInfo = albumsInfo;
     // }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((artistId == null) ? 0 : artistId.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((albums == null) ? 0 : albums.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Artist other = (Artist) obj;
+        if (artistId == null) {
+            if (other.artistId != null)
+                return false;
+        } else if (!artistId.equals(other.artistId))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (albums == null) {
+            if (other.albums != null)
+                return false;
+        } else if (!albums.equals(other.albums))
+            return false;
+        return true;
+    }
+
+    
 }

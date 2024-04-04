@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.AlbumArtist;
@@ -43,6 +45,26 @@ public class AlbumArtistController {
             return new ResponseEntity<ApiResponse>(
                     new ApiResponse(false, "No se ha Recuperado la informac&oacute; de los Albums Artistas", null),
                     HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/all/pageable")
+    public ResponseEntity<ApiResponse> getAllPageable(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements, @RequestParam(defaultValue = "album.nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection){
+        try {
+               Page<AlbumArtist> albumsArtist = albumArtistService.getAllByPage(page, elements, sortBy, sortDirection);
+               ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+               response.addData("albumsArtist", albumsArtist.getContent());
+               response.addData("pageable", albumsArtist.getPageable());
+               response.addData("totalElements", albumsArtist.getTotalElements());
+               response.addData("elementsByPage", albumsArtist.getSize());
+               response.addData("totalPages", albumsArtist.getTotalPages());
+                return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>
+            (new ApiResponse(false,"No se ha Recuperado la informac&oacute; de los Albums Artistas",
+             null),HttpStatus.NOT_FOUND);
         }
     }
 
