@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.datamusic.datamusic.domain.Song;
@@ -11,6 +14,7 @@ import com.datamusic.datamusic.domain.repository.SongRepository;
 import com.datamusic.datamusic.persistence.crud.CancionCrudRepository;
 import com.datamusic.datamusic.persistence.entity.Cancion;
 import com.datamusic.datamusic.persistence.mapper.SongMapper;
+import com.datamusic.datamusic.persistence.pageableAndSort.CancionesPagSortRepository;
 
 @Repository
 public class CancionRepository implements SongRepository {
@@ -21,10 +25,21 @@ public class CancionRepository implements SongRepository {
     @Autowired
     private SongMapper mapper;
 
+    @Autowired
+    private CancionesPagSortRepository cancionesPagSortRepository;
+
     @Override
     public List<Song> getAll() {
         List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findAll();
         return mapper.toSong(canciones);
+    }
+
+    @Override
+    public Page<Song> getAllPageable(Pageable pageable) {
+        Page<Cancion> cancionesByPageable = cancionesPagSortRepository.findAll(pageable);
+        List<Cancion>cancionesList=cancionesByPageable.getContent();
+        List<Song> songsByPageable=mapper.toSong(cancionesList);
+        return new PageImpl<Song>(songsByPageable, pageable,cancionesByPageable.getTotalElements());
     }
 
     @Override
@@ -59,8 +74,8 @@ public class CancionRepository implements SongRepository {
     }
 
     @Override
-    public Optional<Song> getSongByNameAndAlbumId(String name,Long idAlbum) {
-        return cancionCrudRepository.findByNombreAndIdAlbum(name,idAlbum).map(cancion->mapper.toSong(cancion));
+    public Optional<Song> getSongByNameAndAlbumId(String name, Long idAlbum) {
+        return cancionCrudRepository.findByNombreAndIdAlbum(name, idAlbum).map(cancion -> mapper.toSong(cancion));
     }
 
     @Override

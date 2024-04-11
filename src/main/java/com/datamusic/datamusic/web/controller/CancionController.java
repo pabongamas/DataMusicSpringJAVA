@@ -3,6 +3,7 @@ package com.datamusic.datamusic.web.controller;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datamusic.datamusic.domain.Album;
@@ -55,6 +57,26 @@ public class CancionController {
                     HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @GetMapping("/allPageable")
+    public ResponseEntity<ApiResponse> getAllPageable(@RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int elements, 
+    @RequestParam(defaultValue = "nombre") String sortBy,
+    @RequestParam(defaultValue = "ASC") String sortDirection){
+        try {
+            Page<Song> songs=songService.getAllPageable(page, elements, sortBy, sortDirection);
+            ApiResponse response =new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songs", songs.getContent());
+            response.addData("pageable", songs.getPageable());
+            response.addData("totalElements", songs.getTotalElements());
+            response.addData("elementsByPage", songs.getSize());
+            response.addData("totalPages", songs.getTotalPages());
+            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, "No se ha recuperado la informacion de las canciones ", null),
+             HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/{id}")
