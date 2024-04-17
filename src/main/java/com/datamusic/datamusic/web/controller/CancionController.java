@@ -59,21 +59,22 @@ public class CancionController {
 
     @GetMapping("/allPageable")
     public ResponseEntity<ApiResponse> getAllPageable(@RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "10") int elements, 
-    @RequestParam(defaultValue = "nombre") String sortBy,
-    @RequestParam(defaultValue = "ASC") String sortDirection){
+            @RequestParam(defaultValue = "10") int elements,
+            @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
         try {
-            Page<Song> songs=songService.getAllPageable(page, elements, sortBy, sortDirection);
-            ApiResponse response =new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            Page<Song> songs = songService.getAllPageable(page, elements, sortBy, sortDirection);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songs", songs.getContent());
             response.addData("pageable", songs.getPageable());
             response.addData("totalElements", songs.getTotalElements());
             response.addData("elementsByPage", songs.getSize());
             response.addData("totalPages", songs.getTotalPages());
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false, "No se ha recuperado la informacion de las canciones ", null),
-             HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha recuperado la informacion de las canciones ", null),
+                    HttpStatus.NOT_FOUND);
         }
     }
 
@@ -83,132 +84,184 @@ public class CancionController {
 
         if (songById.isPresent()) {
             Song song = songById.get();
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("song", song);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
-        Map<String,String> errors=new HashMap<String,String>();
+        Map<String, String> errors = new HashMap<String, String>();
         errors.put("error", NOT_FOUND_MESSAGE);
-        return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/album/{id}")
-    public ResponseEntity<ApiResponse> getSongsByAlbumId(@PathVariable("id") Long albumId){
+    public ResponseEntity<ApiResponse> getSongsByAlbumId(@PathVariable("id") Long albumId) {
         try {
             List<Song> songsByAlbumId = songService.getSongsByAlbumId(albumId);
-            Iterator<Song>songsIterator= songsByAlbumId.iterator();
-            Album album=new Album();
+            Iterator<Song> songsIterator = songsByAlbumId.iterator();
+            Album album = new Album();
             while (songsIterator.hasNext()) {
-                Song song=songsIterator.next();
-                album=song.getAlbum();
+                Song song = songsIterator.next();
+                album = song.getAlbum();
                 song.setAlbum(null);
                 song.setAlbumId(null);
             }
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
-            response.addData("songsByAlbum",songsByAlbumId);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songsByAlbum", songsByAlbumId);
             response.addData("album", album);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este album", null),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este album",
+                            null),
                     HttpStatus.NOT_FOUND);
         }
 
     }
+
     @GetMapping("/gender/{id}")
-    public ResponseEntity<ApiResponse> getSongsByGenderId(@PathVariable("id") Long genderId){
+    public ResponseEntity<ApiResponse> getSongsByGenderId(@PathVariable("id") Long genderId) {
         try {
             List<Song> songsByGenderId = songService.getSongsByGeneroId(genderId);
-            Iterator<Song>songsIterator= songsByGenderId.iterator();
-            Gender gender=new Gender ();
+            Iterator<Song> songsIterator = songsByGenderId.iterator();
+            Gender gender = new Gender();
             while (songsIterator.hasNext()) {
-                Song song=songsIterator.next();
-                gender=song.getAlbum().getGender();
+                Song song = songsIterator.next();
+                gender = song.getAlbum().getGender();
                 song.setAlbum(null);
                 song.setAlbumId(null);
             }
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
-            response.addData("songsByGender",songsByGenderId);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songsByGender", songsByGenderId);
             response.addData("gender", gender);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Genero", null),
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Genero",
+                            null),
                     HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @GetMapping("/playlist/{id}")
+    public ResponseEntity<ApiResponse> getSongsByPlaylist(@PathVariable("id") Long playlistId,@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements,
+            @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
+        try {
+            List<Song> getSongsByPlaylist = songService.getSongsByPlaylist(playlistId);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songsByPlaylist", getSongsByPlaylist);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Artista",
+                            null),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/playlist/{id}/byPage")
+    public ResponseEntity<ApiResponse> getSongsByPlaylistPage(@PathVariable("id") Long playlistId,@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int elements,
+            @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection) {
+        try {
+            Page<Song> getSongsByPlaylist = songService.getSongsByPlaylistPage(playlistId, page, elements, sortBy, sortDirection);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songs", getSongsByPlaylist.getContent());
+            response.addData("pageable", getSongsByPlaylist.getPageable());
+            response.addData("totalElements", getSongsByPlaylist.getTotalElements());
+            response.addData("elementsByPage", getSongsByPlaylist.getSize());
+            response.addData("totalPages", getSongsByPlaylist.getTotalPages());
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Artista",
+                            null),
+                    HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/artist/{id}")
-    public ResponseEntity<ApiResponse> getSongsByArtist(@PathVariable("id") Long artistId){
+    public ResponseEntity<ApiResponse> getSongsByArtist(@PathVariable("id") Long artistId) {
         try {
-            List<Song>songsByArtistId=songService.getSongsByArtistId(artistId);
-            Iterator<Song> iteratorSong=songsByArtistId.iterator();
-            List<Artist>artists=new ArrayList<Artist>();
+            List<Song> songsByArtistId = songService.getSongsByArtistId(artistId);
+            Iterator<Song> iteratorSong = songsByArtistId.iterator();
+            List<Artist> artists = new ArrayList<Artist>();
             while (iteratorSong.hasNext()) {
-                Song song=iteratorSong.next();
+                Song song = iteratorSong.next();
                 song.getAlbum().getArtists().stream().map(AlbumArtist::getArtist)
-                .forEach(artist->{
-                    if(!artists.contains(artist)){
-                      artists.add(artist);
-                    }
-                });
+                        .forEach(artist -> {
+                            if (!artists.contains(artist)) {
+                                artists.add(artist);
+                            }
+                        });
                 song.setAlbum(null);
                 // song.getAlbum().setArtists(null);
             }
-            ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);
-            response.addData("songsByArtist",songsByArtistId);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            response.addData("songsByArtist", songsByArtistId);
             response.addData("artists", artists);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.OK);
-            
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Artista", null),
-                HttpStatus.NOT_FOUND);
+                    new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este Artista",
+                            null),
+                    HttpStatus.NOT_FOUND);
         }
     }
+
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> save(@Valid @RequestBody Song song){
+    public ResponseEntity<ApiResponse> save(@Valid @RequestBody Song song) {
         try {
-            if(song.getSongId()==null){
-                Optional<Song> validCancion=songService.getSongByNameAndAlbumId(song.getName(),song.getAlbumId());
-                if(validCancion.isPresent()){
+            if (song.getSongId() == null) {
+                Optional<Song> validCancion = songService.getSongByNameAndAlbumId(song.getName(), song.getAlbumId());
+                if (validCancion.isPresent()) {
                     Map<String, String> errors = new HashMap<String, String>();
-                    errors.put("error", "La cancion "+song.getName()+" ya esta incluida en este album ");
+                    errors.put("error", "La cancion " + song.getName() + " ya esta incluida en este album ");
                     return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                             HttpStatus.BAD_REQUEST);
                 }
             }
-            Song songSaved=songService.save(song);
-            ApiResponse response=new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            Song songSaved = songService.save(song);
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("song", songSaved);
-            return new ResponseEntity<ApiResponse>(response,HttpStatus.CREATED);
+            return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(
-                new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-        }  catch (DataIntegrityViolationException ex) {
+                    new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (DataIntegrityViolationException ex) {
             return new ResponseEntity<ApiResponse>(
-                    new ApiResponse(false, "El album con id "+song.getAlbumId()+" no se encuentra registrado",
+                    new ApiResponse(false, "El album con id " + song.getAlbumId() + " no se encuentra registrado",
                             null),
                     HttpStatus.CONFLICT);
         }
     }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse>deleteSong(@PathVariable("id") Long songId){
+    public ResponseEntity<ApiResponse> deleteSong(@PathVariable("id") Long songId) {
         try {
-            boolean songDeleted=songService.delete(songId);
-            if(songDeleted){
-                return new ResponseEntity<ApiResponse>(new ApiResponse(songDeleted, SUCCESSFUL_MESSAGE,null),HttpStatus.OK);
+            boolean songDeleted = songService.delete(songId);
+            if (songDeleted) {
+                return new ResponseEntity<ApiResponse>(new ApiResponse(songDeleted, SUCCESSFUL_MESSAGE, null),
+                        HttpStatus.OK);
             }
-            Map<String,String> errors=new HashMap<String,String>();
+            Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", NOT_FOUND_MESSAGE);
-            return new ResponseEntity<ApiResponse>(new ApiResponse(false,ERROR_MESSAGE, null, errors),HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             Map<String, String> errors = new HashMap<String, String>();
             errors.put("error", e.getMessage());
-            return new ResponseEntity<>(new ApiResponse(false, ERROR_MESSAGE, null, errors),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

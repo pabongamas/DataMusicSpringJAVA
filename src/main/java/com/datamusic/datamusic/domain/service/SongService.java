@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.datamusic.datamusic.domain.Song;
@@ -38,6 +39,14 @@ public class SongService {
     }
     public List<Song> getSongsByArtistId(Long artistId){
         return songRepository.getSongsByArtistId(artistId);
+    }
+    public List<Song> getSongsByPlaylist(Long idPlaylist){
+        return songRepository.getSongsByPlaylistId(idPlaylist);
+    }
+    public Page<Song> getSongsByPlaylistPage(Long idPlaylist, int page,int elements,String sortBy,String sortDirection){
+        Sort sort=Sort.by(Sort.Direction.fromString(sortDirection),sortBy);
+        Pageable pageRequest=PageRequest.of(page,elements,sort);
+        return songRepository.getSongsByPlaylistIdPage(idPlaylist,pageRequest);
     }
     public Song save(Song song){
         return songRepository.save(song);

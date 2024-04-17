@@ -52,6 +52,20 @@ public class CancionRepository implements SongRepository {
         List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findByIdAlbum(albumId);
         return mapper.toSong(canciones);
     }
+    @Override
+    public List<Song> getSongsByPlaylistId(Long playlistId) {
+        List<Cancion> canciones = cancionCrudRepository.findByPlaylistsPlaylistEntityIdPlaylist(playlistId);
+        return mapper.toSong(canciones);
+    }
+    @Override
+    public Page<Song> getSongsByPlaylistIdPage(Long playlistId,Pageable pageable) {
+        Page<Cancion> getSongsByPlaylistIdPage= cancionesPagSortRepository.findByPlaylistsPlaylistEntityIdPlaylist(playlistId,pageable);
+        List<Cancion> getSongsByPlaylistIdList=getSongsByPlaylistIdPage.getContent();
+
+       List<Song> songsByPlaylistId=mapper.toSong(getSongsByPlaylistIdList);
+       return new PageImpl<Song>(songsByPlaylistId, pageable,getSongsByPlaylistIdPage.getTotalElements());
+    }
+
 
     @Override
     public List<Song> getSongsByGeneroId(Long generoId) {
@@ -83,3 +97,5 @@ public class CancionRepository implements SongRepository {
         cancionCrudRepository.deleteById(songId);
     }
 }
+
+  

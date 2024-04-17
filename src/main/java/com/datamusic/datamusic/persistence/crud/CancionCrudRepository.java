@@ -15,6 +15,8 @@ public interface CancionCrudRepository extends CrudRepository<Cancion,Long> {
 
      List<Cancion> findByAlbumArtistasArtistaIdArtistaOrderByNombreAsc(Long idArtist);
 
+     List<Cancion> findByPlaylistsPlaylistEntityIdPlaylist(Long idPlaylist);
+
      Optional<Cancion> findByNombreAndIdAlbum(String nombre,Long idAlbum);
 
 }

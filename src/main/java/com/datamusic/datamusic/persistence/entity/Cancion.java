@@ -1,5 +1,7 @@
 package com.datamusic.datamusic.persistence.entity;
 
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,7 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+
+import java.util.List;
 
 @Entity
 @Table(name = "canciones")
@@ -28,6 +34,9 @@ public class Cancion {
     @ManyToOne
     @JoinColumn(name = "id_album", insertable = false, updatable = false)
     private AlbumEntity album;
+
+    @OneToMany(mappedBy = "cancion",cascade = {CascadeType.ALL})
+    private List<CancionPlaylist> playlists;
 
     public Long getIdCancion() {
         return idCancion;
@@ -68,6 +77,16 @@ public class Cancion {
     public void setAlbum(AlbumEntity album) {
         this.album = album;
     }
+
+    public List<CancionPlaylist> getPlaylists() {
+        return playlists;
+    }
+
+    public void setPlaylists(List<CancionPlaylist> playlists) {
+        this.playlists = playlists;
+    }
+
+   
 
     
 }

@@ -15,6 +15,8 @@ public interface SongRepository {
      List<Song>getSongsByAlbumId(Long albumId);
      List<Song>getSongsByGeneroId(Long generoId);
      List<Song>getSongsByArtistId(Long artistId);
+     List<Song> getSongsByPlaylistId(Long playlistId);
+     Page<Song>getSongsByPlaylistIdPage(Long playlistId,Pageable pageable);
      Song save(Song song);
      Optional<Song> getSongByNameAndAlbumId(String name,Long albumId);
      void delete(Long songId);
