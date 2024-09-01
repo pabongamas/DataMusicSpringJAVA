@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 // con esto habilito la validacion de roles por metdio de antocaciones en los
@@ -45,7 +46,7 @@ public class SecurityConfig {
                              //albums
                              .requestMatchers("/albums/delete/**").hasRole("ARTIST")
                              .requestMatchers(HttpMethod.POST,"/albums/save").hasRole("ARTIST")
-                             .requestMatchers(HttpMethod.POST,"/albums/saveWithImage").hasRole("ARTIST")
+                             .requestMatchers(HttpMethod.POST,"/albums/saveWithImage").hasAnyRole("ARTIST","ADMIN")
                              .requestMatchers(HttpMethod.GET,"/albums/**").hasAnyRole("MEMBER_NORMAL","MEMBER_PREMIUM",
                              "ADMIN")
                              .requestMatchers("/albums/**").hasRole("ARTIST")
@@ -65,7 +66,16 @@ public class SecurityConfig {
                             .anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(configurer -> {
+                    CorsConfiguration corsConfig = new CorsConfiguration();
+                    corsConfig.addAllowedOrigin("*"); // Permitir desde cualquier origen, cambiar a tu dominio específico
+                    corsConfig.addAllowedMethod(HttpMethod.GET);
+                    corsConfig.addAllowedMethod(HttpMethod.POST);
+                    corsConfig.addAllowedMethod(HttpMethod.PUT);
+                    corsConfig.addAllowedMethod(HttpMethod.DELETE);
+                    corsConfig.addAllowedHeader("Authorization");
+                    configurer.configurationSource(request -> corsConfig);
+                })
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // //agregar filtro de autehnticacion por JWT PRINCIPALMENTE
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
