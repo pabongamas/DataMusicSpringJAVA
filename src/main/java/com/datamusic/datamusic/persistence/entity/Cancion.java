@@ -15,6 +15,8 @@ import jakarta.persistence.Table;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Entity
 @Table(name = "canciones")
 public class Cancion {
@@ -31,12 +33,20 @@ public class Cancion {
     @Column(name = "id_album")
     private Long idAlbum;
 
+    @Column
+    private Long numero_cancion;
+
+    private Boolean  explicita;
+
+
     @ManyToOne
     @JoinColumn(name = "id_album", insertable = false, updatable = false)
     private AlbumEntity album;
 
     @OneToMany(mappedBy = "cancion",cascade = {CascadeType.ALL})
     private List<CancionPlaylist> playlists;
+
+
 
     public Long getIdCancion() {
         return idCancion;
@@ -86,6 +96,23 @@ public class Cancion {
         this.playlists = playlists;
     }
 
+    public Long getNumero_cancion() {
+        return numero_cancion;
+    }
+
+    public void setNumero_cancion(Long numero_cancion) {
+        this.numero_cancion = numero_cancion;
+    }
+
+    public Boolean  isExplicita() {
+        return explicita;
+    }
+
+    public void setExplicita(Boolean  explicita) {
+        this.explicita = explicita;
+    }
+
+    
    
 
     

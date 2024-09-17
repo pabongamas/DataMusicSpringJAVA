@@ -16,6 +16,8 @@ public interface SongMapper {
       @Mapping(source = "idAlbum", target = "albumId"),
       @Mapping(source = "nombre", target = "name"),
       @Mapping(source = "duracion", target = "duration"),
+      @Mapping(source = "numero_cancion", target = "numberSong"),
+      @Mapping(source = "explicita", target = "explicit"),
       @Mapping(source = "idCancion", target = "songId"),
       @Mapping(source = "album", target = "album"),
   })

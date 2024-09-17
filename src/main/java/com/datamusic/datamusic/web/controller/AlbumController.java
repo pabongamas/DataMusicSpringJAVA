@@ -9,7 +9,10 @@ import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +39,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.Artist;
+import com.datamusic.datamusic.domain.Song;
 import com.datamusic.datamusic.domain.service.AlbumService;
 import com.datamusic.datamusic.domain.service.ImageProcess;
 import com.datamusic.datamusic.domain.service.SaveFileService;
+import com.datamusic.datamusic.domain.service.SongService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import java.awt.Color;
@@ -58,6 +63,9 @@ public class AlbumController {
 
     @Autowired
     private SaveFileService saveFileService;
+
+    @Autowired
+    private SongService songService;
 
     @Autowired
     private ImageProcess imageProcess;
@@ -186,7 +194,7 @@ public class AlbumController {
 
                 // obtener colores principales de la imagen del album
                 List<Map<String, Object>> colorsImg = imageProcess.colorsOfImage(uploadDirectory + "" + nameImgAlbum,
-                        5);
+                        1);
 
                 response.addData("route", uploadDirectory + "" + nameImgAlbum);
                 response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
@@ -200,6 +208,34 @@ public class AlbumController {
             String[] namesArtists = listArtists.stream().map(AlbumArtist::getArtist).map(Artist::getName)
                     .toArray(String[]::new);
             response.addData("artists", namesArtists);
+
+            //voy a listar las canciones que tiene el album 
+            List<Song> songs;
+            try {
+              songs =songService.getSongsByAlbumId(albumId);
+            } catch (Exception e) {
+                return new ResponseEntity<ApiResponse>(
+                        new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este album",
+                                null),
+                        HttpStatus.NOT_FOUND);
+            }
+            if(songs.size()>0){
+                Iterator<Song> songsIterator = songs.iterator();
+                while (songsIterator.hasNext()) {
+                    Song songIteration=songsIterator.next();
+                    songIteration.setAlbum(null);
+                    songIteration.setAlbumId(null);
+                }
+                Collections.sort(songs,new Comparator<Song>() {
+
+                    @Override
+                    public int compare(Song arg0, Song arg1) {
+                        return arg0.getNumberSong()!=null? arg0.getNumberSong().compareTo(arg1.getNumberSong()):0;
+                    }
+                    
+                });
+            }
+            response.addData("songs", songs);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         }
         Map<String, String> errors = new HashMap<String, String>();

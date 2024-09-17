@@ -32,7 +32,6 @@ public class AuthController {
          //este autauthenticationManager va a loadUserByUsername de usersecurityservice ya que es la clase que implementa la seguridad por medio de UserDetailsService
         UsernamePasswordAuthenticationToken login =new UsernamePasswordAuthenticationToken(LoginDto.getEmail(), LoginDto.getPassword());
         Authentication authentication=this.authenticationManager.authenticate(login);
-        System.out.println(authentication);
         String jwt=this.jwtUtil.create(LoginDto.getEmail());
         
         ApiResponse response=new ApiResponse(true,SUCCESSFUL_MESSAGE);

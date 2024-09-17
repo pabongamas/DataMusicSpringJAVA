@@ -26,6 +26,8 @@ import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 import jakarta.validation.Valid;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -106,12 +108,22 @@ public class CancionController {
                 song.setAlbum(null);
                 song.setAlbumId(null);
             }
+            // Collections.sort(songsByAlbumId,new Comparator<Song>() {
+
+            //     @Override
+            //     public int compare(Song arg0, Song arg1) {
+            //        return arg0.getNumberSong().compareTo(arg1.getNumberSong());
+            //     }
+
+                
+            // });
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songsByAlbum", songsByAlbumId);
             response.addData("album", album);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 
         } catch (Exception e) {
+            System.out.println(e);
             return new ResponseEntity<ApiResponse>(
                     new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este album",
                             null),

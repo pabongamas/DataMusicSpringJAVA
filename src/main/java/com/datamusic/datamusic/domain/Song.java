@@ -17,6 +17,10 @@ public class Song {
     private Long albumId;
      @JsonInclude(JsonInclude.Include.NON_NULL)
     private Album album;
+    @NotNull(message = "No se ha definido el numero de la cancion")
+    private Long numberSong;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean  explicit;
 
     public Long getSongId() {
         return songId;
@@ -58,4 +62,22 @@ public class Song {
         this.album = album;
     }
 
+    public Long getNumberSong() {
+        return numberSong;
+    }
+
+    public void setNumberSong(Long numberSong) {
+        this.numberSong = numberSong;
+    }
+
+    public Boolean  isExplicit() {
+        return explicit;
+    }
+
+    public void setExplicit(Boolean  explicit) {
+        this.explicit = explicit;
+    }
+    
+
+    
 }

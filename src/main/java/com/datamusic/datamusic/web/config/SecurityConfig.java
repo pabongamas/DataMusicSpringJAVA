@@ -56,12 +56,16 @@ public class SecurityConfig {
                              .requestMatchers(HttpMethod.POST,"/artists/save").hasRole("ADMIN")
                              .requestMatchers(HttpMethod.DELETE,"/artists/delete/**").hasRole("ADMIN")
                              .requestMatchers(HttpMethod.GET,"/artists/**").hasAnyRole("MEMBER_PREMIUM",
-                              "ADMIN","ARTIST")
+                             "ARTIST","ADMIN")
                               //songs
                               //artists
                              .requestMatchers(HttpMethod.POST,"/songs/save").hasAnyRole("ADMIN","ARTIST")
                              .requestMatchers(HttpMethod.DELETE,"/songs/delete/**").hasAnyRole("ADMIN","ARTIST")
                              .requestMatchers(HttpMethod.GET,"/songs/**").hasAnyRole("MEMBER_PREMIUM",
+                              "ADMIN","ARTIST")
+
+                              //songsUsers
+                              .requestMatchers(HttpMethod.GET,"/songUser/**").hasAnyRole("MEMBER_PREMIUM",
                               "ADMIN","ARTIST")
                             .anyRequest().authenticated();
                 })

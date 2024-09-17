@@ -1,6 +1,8 @@
 package com.datamusic.datamusic.web.config;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
@@ -16,7 +18,10 @@ public class JwtUtil {
     private static Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
     public String create(String username) {
+        //    Map<String, Object> colorFrequencyValues = new HashMap<String, Object>();
+                // colorFrequencyValues.put("user","xd");
         return JWT.create()
+                // .withPayload(colorFrequencyValues)
                 .withSubject(username)
                 .withIssuer("dataMusic")
                 .withIssuedAt(new Date())
