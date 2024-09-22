@@ -6,6 +6,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class SongUser {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long idUser;
     private Long idSong;
     @JsonInclude(JsonInclude.Include.NON_NULL)

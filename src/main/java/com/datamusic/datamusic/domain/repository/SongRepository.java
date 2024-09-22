@@ -23,7 +23,4 @@ public interface SongRepository {
      void delete(Long songId);
      List<Song>getSongsOfAlbumLikedByUser(Long userId,Long albumId);
      boolean songIsLiked(Long songId,Long userId,Long albumId);
-
-
-
 }

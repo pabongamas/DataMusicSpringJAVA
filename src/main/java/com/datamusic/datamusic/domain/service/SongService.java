@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.datamusic.datamusic.domain.Song;
+import com.datamusic.datamusic.domain.SongUser;
 import com.datamusic.datamusic.domain.UserEntity;
 import com.datamusic.datamusic.domain.repository.SongRepository;
 import com.datamusic.datamusic.persistence.UsuarioRepository;

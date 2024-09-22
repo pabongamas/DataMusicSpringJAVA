@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,7 +84,6 @@ public class CancionUsuarioController {
       List<Song> songsLikedOfAlbumByUser=songService.getSongsLikedOfAlbumByUser(token, idAlbum);
       ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
       response.addData("songs",songsLikedOfAlbumByUser);
-      response.addData("as",  request.getHeader(HttpHeaders.AUTHORIZATION));
       return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
     } catch (Exception e) {
       Map<String, String> errors = new HashMap<String, String>();
@@ -89,4 +91,19 @@ public class CancionUsuarioController {
       return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors), HttpStatus.NOT_FOUND);
     }
   }
-}
+
+  @PostMapping("/like/{id}")
+  public ResponseEntity<ApiResponse> newLikedSongUser(@PathVariable("id") Long idSong,HttpServletRequest request){
+    try {
+      String token= request.getHeader(HttpHeaders.AUTHORIZATION);
+      SongUser SongUser = songUserService.likeSong(idSong,token);
+      ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+      response.addData("liked",SongUser);
+      return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+    }catch (SQLGrammarException ex) {
+            return new ResponseEntity<ApiResponse>(
+                    new ApiResponse(false, "Error de gramática SQL:" + ex.getSQLException()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        } 
+    }
+  }
