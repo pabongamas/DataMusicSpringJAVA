@@ -46,9 +46,7 @@ import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.domain.service.SongService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -174,7 +172,8 @@ public class AlbumController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId) throws IOException {
+    public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId,HttpServletRequest request) throws IOException {
+        String token= request.getHeader(HttpHeaders.AUTHORIZATION);
         Optional<Album> albumById = albumService.getAlbumById(albumId);
         if (albumById.isPresent()) {
             Album album = albumById.get();
@@ -225,6 +224,8 @@ public class AlbumController {
                     Song songIteration=songsIterator.next();
                     songIteration.setAlbum(null);
                     songIteration.setAlbumId(null);
+                   boolean isLiked=songService.songIsLiked(songIteration.getSongId(), albumId,token);
+                   songIteration.setIsLikedByCurrentUser(isLiked);
                 }
                 Collections.sort(songs,new Comparator<Song>() {
 

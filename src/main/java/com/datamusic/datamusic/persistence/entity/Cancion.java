@@ -33,8 +33,8 @@ public class Cancion {
     @Column(name = "id_album")
     private Long idAlbum;
 
-    @Column
-    private Long numero_cancion;
+    @Column(name="numero_cancion")
+    private Long numeroCancion;
 
     private Boolean  explicita;
 
@@ -45,6 +45,9 @@ public class Cancion {
 
     @OneToMany(mappedBy = "cancion",cascade = {CascadeType.ALL})
     private List<CancionPlaylist> playlists;
+
+    @OneToMany(mappedBy = "cancion",cascade = {CascadeType.ALL})
+    private List<CancionesUsuarios> usuarios;
 
 
 
@@ -97,11 +100,11 @@ public class Cancion {
     }
 
     public Long getNumero_cancion() {
-        return numero_cancion;
+        return numeroCancion;
     }
 
     public void setNumero_cancion(Long numero_cancion) {
-        this.numero_cancion = numero_cancion;
+        this.numeroCancion = numero_cancion;
     }
 
     public Boolean  isExplicita() {

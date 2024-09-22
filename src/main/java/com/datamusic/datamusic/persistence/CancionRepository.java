@@ -96,6 +96,33 @@ public class CancionRepository implements SongRepository {
     public void delete(Long songId) {
         cancionCrudRepository.deleteById(songId);
     }
+
+    @Override
+    public Page<Song> getSongsLikedByUser(Long userId, Pageable pageable) {
+        Page<Cancion>cancionesByUsuario=cancionesPagSortRepository.findByUsuariosUsuarioIdUsuario(userId, pageable);
+        List<Cancion> cancionesList=cancionesByUsuario.getContent();
+        List<Song> songByUserMapper=mapper.toSong(cancionesList);
+        return new PageImpl<Song>(songByUserMapper,pageable,cancionesByUsuario.getTotalElements());
+    }
+
+    @Override
+    public List<Song> getSongsOfAlbumLikedByUser(Long userId, Long albumId) {
+        List<Cancion> SongsLikedOfAlbumByUser=cancionCrudRepository.findByUsuariosIdIdUsuarioAndAlbumIdAlbum(userId,albumId);
+        List<Song> SongsLikedOfAlbumByUserMap=mapper.toSong(SongsLikedOfAlbumByUser);
+        return SongsLikedOfAlbumByUserMap;
+    }
+
+    @Override
+    public boolean songIsLiked(Long songId, Long userId, Long albumId) {
+        List<Cancion> SongsLikedOfAlbumByUserAndSongID= cancionCrudRepository.findByUsuariosIdIdUsuarioAndAlbumIdAlbumAndIdCancion(userId, albumId,songId);
+        List<Song> SongsLikedOfAlbumByUserAndSongIDMap=mapper.toSong(SongsLikedOfAlbumByUserAndSongID);
+        if (SongsLikedOfAlbumByUserAndSongIDMap.size()>0) {
+            return true;
+        }
+        return false;
+    }
+
+    
 }
 
   

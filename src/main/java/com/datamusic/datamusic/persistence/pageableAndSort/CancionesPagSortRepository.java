@@ -10,4 +10,6 @@ public interface CancionesPagSortRepository extends ListPagingAndSortingReposito
     
 
     Page<Cancion> findByPlaylistsPlaylistEntityIdPlaylist(Long idPlaylist,Pageable pageable);
+
+    Page<Cancion> findByUsuariosUsuarioIdUsuario(Long idUsuario,Pageable pageable);
 }

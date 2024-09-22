@@ -11,6 +11,7 @@ import com.datamusic.datamusic.domain.Song;
 public interface SongRepository {
      List<Song>getAll();
      Page<Song>getAllPageable(Pageable pageable);
+     Page<Song>getSongsLikedByUser(Long userId,Pageable pageable);
      Optional<Song>getSong(Long songId);
      List<Song>getSongsByAlbumId(Long albumId);
      List<Song>getSongsByGeneroId(Long generoId);
@@ -20,6 +21,8 @@ public interface SongRepository {
      Song save(Song song);
      Optional<Song> getSongByNameAndAlbumId(String name,Long albumId);
      void delete(Long songId);
+     List<Song>getSongsOfAlbumLikedByUser(Long userId,Long albumId);
+     boolean songIsLiked(Long songId,Long userId,Long albumId);
 
 
 

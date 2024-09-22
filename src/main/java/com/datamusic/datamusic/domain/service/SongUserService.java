@@ -1,5 +1,8 @@
 package com.datamusic.datamusic.domain.service;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,10 +21,12 @@ public class SongUserService {
     public List<SongUser>getAll(){
         List<SongUser> songUsersAll= songUserRepository.getAll();
         Iterator<SongUser> iteratorSongUser=songUsersAll.iterator();
-        if(iteratorSongUser.hasNext()){
+        while(iteratorSongUser.hasNext()){
             SongUser songUser=iteratorSongUser.next();
             songUser.setUser(null);
             songUser.setSong(null);
+            songUser.setDateAddText(songUser.getDateAdd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            songUser.setDateAdd(null);
         }
         return songUsersAll;
     }

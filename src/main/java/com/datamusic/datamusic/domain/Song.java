@@ -21,6 +21,8 @@ public class Song {
     private Long numberSong;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean  explicit;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Boolean  isLikedByCurrentUser;
 
     public Long getSongId() {
         return songId;
@@ -76,6 +78,18 @@ public class Song {
 
     public void setExplicit(Boolean  explicit) {
         this.explicit = explicit;
+    }
+
+    public Boolean getExplicit() {
+        return explicit;
+    }
+
+    public Boolean getIsLikedByCurrentUser() {
+        return isLikedByCurrentUser;
+    }
+
+    public void setIsLikedByCurrentUser(Boolean isLikedByCurrentUser) {
+        this.isLikedByCurrentUser = isLikedByCurrentUser;
     }
     
 

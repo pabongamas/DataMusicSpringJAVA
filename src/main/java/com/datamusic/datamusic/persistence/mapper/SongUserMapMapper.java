@@ -17,6 +17,7 @@ public interface SongUserMapMapper {
      @Mappings({
             @Mapping(source = "id.idCancion", target = "idSong"),
             @Mapping(source = "id.idUsuario", target = "idUser"),
+            @Mapping(source="fecha_agregada",target = "dateAdd"),
             @Mapping(source = "cancion", target = "song", ignore = false),
             @Mapping(source = "usuario", target = "user", ignore = false),
     })

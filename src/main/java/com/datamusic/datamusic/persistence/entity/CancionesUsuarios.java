@@ -1,5 +1,9 @@
 package com.datamusic.datamusic.persistence.entity;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -27,6 +31,9 @@ public class CancionesUsuarios {
     @MapsId("idUsuario")
     @JoinColumn(name = "id_usuario", insertable=false,updatable=false)
     private Usuario usuario;
+
+    @Column(name = "fecha_agregada")
+    private LocalDateTime fecha_agregada;
 
 
     public CancionesUsuariosPK getId() {
@@ -58,6 +65,13 @@ public class CancionesUsuarios {
         this.usuario = usuario;
     }
 
-    
 
+    public LocalDateTime getFecha_agregada() {
+        return fecha_agregada;
+    }
+
+
+    public void setFecha_agregada(LocalDateTime fecha_agregada) {
+        this.fecha_agregada = fecha_agregada;
+    }
 }
