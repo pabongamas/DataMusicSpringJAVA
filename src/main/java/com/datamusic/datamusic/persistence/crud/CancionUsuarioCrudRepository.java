@@ -10,5 +10,6 @@ import com.datamusic.datamusic.persistence.entity.CancionesUsuariosPK;
 public interface CancionUsuarioCrudRepository extends CrudRepository<CancionesUsuarios,CancionesUsuariosPK>{
      List<CancionesUsuarios> findByIdIdCancion(Long idCancion);
      List<CancionesUsuarios> findByIdIdUsuario(Long idUsuario);
+     CancionesUsuarios findByIdIdUsuarioAndIdIdCancion(Long idUsuario,Long idCancion);
 
 }

@@ -71,4 +71,36 @@ public class CancionUsuarioRepository implements SongUserRepository {
         return null;
     }
 
+    @Override
+    public boolean dislikeSong(Long userId, Long songId) {
+        Optional<Usuario>usuario=usuarioCrudRepository.findById(userId);
+        if(!usuario.isEmpty()){
+            //create object primary key 
+            CancionesUsuariosPK CancionesUsuariosPK=new CancionesUsuariosPK();
+            CancionesUsuariosPK.setIdCancion(songId);
+            CancionesUsuariosPK.setIdUsuario(songId);
+
+            //create object cancion 
+            Optional<Cancion> cancion=cancionCrudRepository.findById(songId);
+
+            if(cancion.isEmpty()){
+               throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,"Song Not Found");
+            }
+
+            CancionesUsuarios CancionUsuario=cancionUsuarioCrudRepository.findByIdIdUsuarioAndIdIdCancion(userId, songId);
+            // create object cancionUsuario
+            // CancionesUsuarios cancionUsuario=new CancionesUsuarios();
+            // cancionUsuario.setId(CancionesUsuariosPK);
+            // cancionUsuario.setUsuario(usuario.get());
+            // cancionUsuario.setCancion(cancion.get());
+            // cancionUsuario.setFecha_agregada(LocalDateTime.now());
+
+            //remove liked song of table
+            cancionUsuarioCrudRepository.delete(CancionUsuario);
+            return true;
+        }
+        return false;
+    }
+
 }

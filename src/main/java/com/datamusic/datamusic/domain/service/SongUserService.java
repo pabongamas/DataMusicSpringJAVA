@@ -57,6 +57,17 @@ public class SongUserService {
         likedSong.setSong(null);
         return likedSong;
       }
+
+      public boolean dislikeSongUser(Long idSong,String token){
+        String jwt=token.split(" ")[1].trim();
+        String username=this.jwtUtil.getUsername(jwt);
+          // Once a time  i got the username ,the user is searched through the username
+          UserEntity userEntity= this.userRepository.getUserByEmail(username)
+          .orElseThrow(()->new UsernameNotFoundException("User "+username+" Not found"));
+          Long userId=userEntity.getIdUser();
+          boolean dislikedSong=songUserRepository.dislikeSong(userId, idSong);
+          return dislikedSong;
+      }
   
     
 }
