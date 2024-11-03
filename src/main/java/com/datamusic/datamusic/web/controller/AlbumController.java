@@ -244,6 +244,43 @@ public class AlbumController {
         return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                 HttpStatus.NOT_FOUND);
     }
+    @GetMapping("/{id}/imageThumb")
+    public ResponseEntity<?> getImageAlbumThumb(@PathVariable("id") Long idAlbum) throws IOException {
+        Optional<Album> albumById = albumService.getAlbumById(idAlbum);
+        if (albumById.isPresent()) {
+            Album album = albumById.get();
+            if (album.getNameFile() != null) {
+                String nameImgAlbum = album.getNameFile();
+                String uploadDirectoryThumb = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
+                byte[] imgBytesAlbumThumb = saveFileService.getImage(uploadDirectoryThumb, nameImgAlbum);
+
+                ByteArrayResource resource = new ByteArrayResource(imgBytesAlbumThumb);
+                ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+
+                response.addData("album", album);
+                // response.addData("imgs", imagesByteList);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .contentLength(resource.contentLength())
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                ContentDisposition.attachment()
+                                        .filename(nameImgAlbum)
+                                        .build().toString())
+                        .body(resource);
+            }
+
+            ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
+            Map<String, String> errors = new HashMap<String, String>();
+            errors.put("imgAlbum", NOT_FOUND_IMAGE_MESSAGE);
+            return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                    HttpStatus.NOT_FOUND);
+        }
+        Map<String, String> errors = new HashMap<String, String>();
+        errors.put("error", NOT_FOUND_MESSAGE);
+        return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
+                HttpStatus.NOT_FOUND);
+
+    }
 
     @GetMapping("/gender/{id}")
     public ResponseEntity<ApiResponse> getAlbumByGenderId(@PathVariable("id") Long genderId) {
