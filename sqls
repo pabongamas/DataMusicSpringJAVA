@@ -132,5 +132,15 @@ CREATE TABLE ARTISTAS (
 SELECT setval('public.generos_id_genero_seq', 2, true);
 SELECT setval('public.artistas_id_artista_seq', 2, true);
 SELECT setval('public.albums_id_album_seq', 3, true);
-   
+
+
+ALTER TABLE CANCIONES
+ADD COLUMN numero_cancion INTEGER,
+ADD COLUMN explicita BOOLEAN,
+ADD COLUMN nombre_archivo VARCHAR(255);
+
+ALTER TABLE ALBUMS
+ADD COLUMN nombre_archivo VARCHAR(255);
+
+
    

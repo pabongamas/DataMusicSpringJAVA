@@ -332,7 +332,7 @@ public class AlbumController {
             // String uploadDirectory ="src/main/resources/static/images/ads";
             String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
 
-            String nameImgSaved = saveFileService.saveImageToStorage(uploadDirectory, image);
+            String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory, image);
 
             // PATH OF THUMBNAILS
             String uploadDirectoryThumbsAlbum = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;

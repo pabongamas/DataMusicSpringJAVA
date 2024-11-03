@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class SaveFileService {
 
     //guardar imagen en un directorio local
-    public String saveImageToStorage(String uploadDirectory, MultipartFile imageFile) throws IOException {
+    public String saveFileToStorage(String uploadDirectory, MultipartFile imageFile) throws IOException {
         //asigno nombre unico , donde me concatena UUID aleatorio con el nombre original de la imagen
         String uniqueFileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
 

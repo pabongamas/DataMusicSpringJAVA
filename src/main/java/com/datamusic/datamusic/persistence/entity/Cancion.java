@@ -50,6 +50,10 @@ public class Cancion {
     private List<CancionesUsuarios> usuarios;
 
 
+    @Column(name="nombre_archivo")
+    private String nombre_archivo;
+
+
 
     public Long getIdCancion() {
         return idCancion;
@@ -114,6 +118,15 @@ public class Cancion {
     public void setExplicita(Boolean  explicita) {
         this.explicita = explicita;
     }
+
+    public String getNombre_archivo() {
+        return nombre_archivo;
+    }
+
+    public void setNombre_archivo(String nombre_archivo) {
+        this.nombre_archivo = nombre_archivo;
+    }
+    
 
     
    

@@ -2,29 +2,45 @@ package com.datamusic.datamusic.web.controller;
 
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.Artist;
 import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.Song;
+import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.domain.service.SongService;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,6 +53,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/songs")
 public class CancionController {
+
+    @Autowired
+    private SaveFileService saveFileService;
+
+    @Value("${upload.directory}")
+    private String uploadDirectory;
+
+    @Value("${upload.directory.songs}")
+    private String uploadDirectorySongs;
+
     private static final String ERROR_MESSAGE = "Han ocurrido errores";
     private static final String SUCCESSFUL_MESSAGE = "Operación exitosa";
     private static final String NOT_FOUND_MESSAGE = "Canción No Encontrada";
@@ -110,12 +136,11 @@ public class CancionController {
             }
             // Collections.sort(songsByAlbumId,new Comparator<Song>() {
 
-            //     @Override
-            //     public int compare(Song arg0, Song arg1) {
-            //        return arg0.getNumberSong().compareTo(arg1.getNumberSong());
-            //     }
+            // @Override
+            // public int compare(Song arg0, Song arg1) {
+            // return arg0.getNumberSong().compareTo(arg1.getNumberSong());
+            // }
 
-                
             // });
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songsByAlbum", songsByAlbumId);
@@ -159,7 +184,8 @@ public class CancionController {
     }
 
     @GetMapping("/playlist/{id}")
-    public ResponseEntity<ApiResponse> getSongsByPlaylist(@PathVariable("id") Long playlistId,@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<ApiResponse> getSongsByPlaylist(@PathVariable("id") Long playlistId,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int elements,
             @RequestParam(defaultValue = "nombre") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDirection) {
@@ -176,13 +202,16 @@ public class CancionController {
                     HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/playlist/{id}/byPage")
-    public ResponseEntity<ApiResponse> getSongsByPlaylistPage(@PathVariable("id") Long playlistId,@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<ApiResponse> getSongsByPlaylistPage(@PathVariable("id") Long playlistId,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int elements,
             @RequestParam(defaultValue = "nombre") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDirection) {
         try {
-            Page<Song> getSongsByPlaylist = songService.getSongsByPlaylistPage(playlistId, page, elements, sortBy, sortDirection);
+            Page<Song> getSongsByPlaylist = songService.getSongsByPlaylistPage(playlistId, page, elements, sortBy,
+                    sortDirection);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("songs", getSongsByPlaylist.getContent());
             response.addData("pageable", getSongsByPlaylist.getPageable());
@@ -230,7 +259,8 @@ public class CancionController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> save(@Valid @RequestBody Song song) {
+    public ResponseEntity<ApiResponse> save(@Valid @RequestPart("song") Song song,
+            @RequestPart(value = "file", required = false) MultipartFile fileSong) throws IOException {
         try {
             if (song.getSongId() == null) {
                 Optional<Song> validCancion = songService.getSongByNameAndAlbumId(song.getName(), song.getAlbumId());
@@ -240,6 +270,13 @@ public class CancionController {
                     return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                             HttpStatus.BAD_REQUEST);
                 }
+            }
+            if (fileSong != null) {
+                // String uploadDirectory ="src/main/resources/static/songs";
+                String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
+                String nameFileSaved = saveFileService.saveFileToStorage(uploadDirectory, fileSong);
+
+                song.setNameFile(nameFileSaved);
             }
             Song songSaved = songService.save(song);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
@@ -276,4 +313,62 @@ public class CancionController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/uploadSong")
+    public ResponseEntity<ApiResponse> uploadSong(@Valid @RequestPart("song") MultipartFile image) throws IOException {
+
+        // String uploadDirectory ="src/main/resources/static/songs";
+        String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
+
+        String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory, image);
+        // TODO: process POST request
+
+        return new ResponseEntity<ApiResponse>(new ApiResponse(true, SUCCESSFUL_MESSAGE), HttpStatus.OK);
+    }
+
+    @GetMapping("play/{idSong}")
+    public ResponseEntity<InputStreamResource> streamAudio(@PathVariable Long idSong,
+            @RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException {
+
+        String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
+
+        Optional<Song> songObj = this.songService.getSong(idSong);
+            Song song = songObj.get();
+            String fileName = song.getNameFile();
+            Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
+            RandomAccessFile audioFile = new RandomAccessFile(filePath.toFile(), "r");
+            long fileSize = audioFile.length();
+
+            if (rangeHeader == null) {
+                // Si no se especifica un rango, devolver el archivo completo
+                byte[] fileContent = new byte[(int) fileSize];
+                audioFile.readFully(fileContent);
+                InputStream inputStream = new ByteArrayInputStream(fileContent);
+                InputStreamResource resource = new InputStreamResource(inputStream);
+
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize))
+                        .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+                        .body(resource);
+            }
+            // Parsear el rango solicitado
+            HttpRange range = HttpRange.parseRanges(rangeHeader).get(0);
+            long start = range.getRangeStart(fileSize);
+            long end = range.getRangeEnd(fileSize);
+            long contentLength = end - start + 1;
+
+            // Leer el rango específico en un byte array
+            audioFile.seek(start);
+            byte[] partialContent = new byte[(int) contentLength];
+            audioFile.readFully(partialContent);
+            InputStream inputStream = new ByteArrayInputStream(partialContent);
+            InputStreamResource resource = new InputStreamResource(inputStream);
+
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+            .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
+            .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileSize)
+            .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+            .body(resource);
+    }
+
 }

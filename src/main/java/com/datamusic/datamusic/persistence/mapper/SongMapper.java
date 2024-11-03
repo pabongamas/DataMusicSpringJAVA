@@ -20,6 +20,7 @@ public interface SongMapper {
       @Mapping(source = "explicita", target = "explicit"),
       @Mapping(source = "idCancion", target = "songId"),
       @Mapping(source = "album", target = "album"),
+      @Mapping(source = "nombre_archivo", target = "nameFile"),
   })
   Song toSong(Cancion cancion);
 

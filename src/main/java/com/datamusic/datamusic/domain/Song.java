@@ -22,6 +22,9 @@ public class Song {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean  explicit;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String nameFile;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+
     private Boolean  isLikedByCurrentUser;
 
     public Long getSongId() {
@@ -91,6 +94,15 @@ public class Song {
     public void setIsLikedByCurrentUser(Boolean isLikedByCurrentUser) {
         this.isLikedByCurrentUser = isLikedByCurrentUser;
     }
+
+    public String getNameFile() {
+        return nameFile;
+    }
+
+    public void setNameFile(String nameFile) {
+        this.nameFile = nameFile;
+    }
+    
     
 
     
