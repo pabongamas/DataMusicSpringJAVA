@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import java.util.Map;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +44,9 @@ import com.datamusic.datamusic.domain.Song;
 import com.datamusic.datamusic.domain.service.AlbumService;
 import com.datamusic.datamusic.domain.service.ImageProcess;
 import com.datamusic.datamusic.domain.service.SaveFileService;
+import com.datamusic.datamusic.domain.service.SaveFileServiceS3AWS;
 import com.datamusic.datamusic.domain.service.SongService;
+import com.datamusic.datamusic.persistence.DTO.FileUploadResponse;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,6 +70,8 @@ public class AlbumController {
 
     @Autowired
     private ImageProcess imageProcess;
+    @Autowired
+    private SaveFileServiceS3AWS SaveFileServiceS3AWS;
 
     @Value("${upload.directory}")
     private String uploadDirectory;
@@ -112,9 +117,19 @@ public class AlbumController {
             for (Album album : albums.getContent()) {
                 if (album.getNameFile() != null) {
                     String nameImgAlbum = album.getNameFile();
-                    String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
-                    byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
-                    album.setImgAlbum(imgBytesAlbum);
+                    // String uploadDirectory = this.uploadDirectory + "" +
+                    // this.uploadDirectoryAlbums;
+                    String uploadDirectory = this.uploadDirectoryAlbums;
+
+                    FileUploadResponse fileResponse = SaveFileServiceS3AWS.getFile(uploadDirectory, nameImgAlbum);
+                    // byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory,
+                    // nameImgAlbum);
+                    // album.setImgAlbum(imgBytesAlbum);
+                    album.setPathImageAlbum(null);
+                    if (!fileResponse.getFilePath().isEmpty()) {
+                        album.setPathImageAlbum(fileResponse.getFilePath());
+
+                    }
                 }
             }
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
@@ -172,8 +187,9 @@ public class AlbumController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId,HttpServletRequest request) throws IOException {
-        String token= request.getHeader(HttpHeaders.AUTHORIZATION);
+    public ResponseEntity<ApiResponse> getAlbumById(@PathVariable("id") Long albumId, HttpServletRequest request)
+            throws IOException {
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         Optional<Album> albumById = albumService.getAlbumById(albumId);
         if (albumById.isPresent()) {
             Album album = albumById.get();
@@ -181,59 +197,75 @@ public class AlbumController {
             response.addData("album", album);
             if (album.getNameFile() != null) {
                 String nameImgAlbum = album.getNameFile();
-                String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
-                String uploadDirectoryThumb = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
+                // String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+                // String uploadDirectoryThumb = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
 
-                // List<Map<String, byte[]>> imagesByteList = new ArrayList<>();
-                byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
-                // Map<String, byte[]>MapImgAlbum = new HashMap<>();
-                // MapImgAlbum.put("album_"+album.getAlbumId(),imgBytesAlbum);
-                // imagesByteList.add(MapImgAlbum);
-                album.setImgAlbum(imgBytesAlbum);
+                // // List<Map<String, byte[]>> imagesByteList = new ArrayList<>();
+                // byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory, nameImgAlbum);
+                // // Map<String, byte[]>MapImgAlbum = new HashMap<>();
+                // // MapImgAlbum.put("album_"+album.getAlbumId(),imgBytesAlbum);
+                // // imagesByteList.add(MapImgAlbum);
+                // album.setImgAlbum(imgBytesAlbum);
+
+
+                String uploadDirectory = this.uploadDirectoryAlbums;
+
+                FileUploadResponse fileResponse = SaveFileServiceS3AWS.getFile(uploadDirectory, nameImgAlbum);
+                // byte[] imgBytesAlbum = saveFileService.getImage(uploadDirectory,
+                // nameImgAlbum);
+                // album.setImgAlbum(imgBytesAlbum);
+                album.setPathImageAlbum("");
+                if (!fileResponse.getFilePath().isEmpty()) {
+                    album.setPathImageAlbum(fileResponse.getFilePath());
+                    System.out.println(album.getPathImageAlbum());
+
+                }
 
                 // obtener colores principales de la imagen del album
                 List<Map<String, Object>> colorsImg = imageProcess.colorsOfImage(uploadDirectory + "" + nameImgAlbum,
                         1);
 
                 response.addData("route", uploadDirectory + "" + nameImgAlbum);
-                response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
+                // response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
                 response.addData("colors", colorsImg);
                 // response.addData("imgs", imagesByteList);
 
             }
-            //con este puedo crear  una sequencia de datos y procesarla ahi mismo y retornar una nueva data 
+            // con este puedo crear una sequencia de datos y procesarla ahi mismo y retornar
+            // una nueva data
             // como lo asigne
             List<AlbumArtist> listArtists = album.getArtists();
             String[] namesArtists = listArtists.stream().map(AlbumArtist::getArtist).map(Artist::getName)
                     .toArray(String[]::new);
             response.addData("artists", namesArtists);
 
-            //voy a listar las canciones que tiene el album 
+            // voy a listar las canciones que tiene el album
             List<Song> songs;
             try {
-              songs =songService.getSongsByAlbumId(albumId);
+                songs = songService.getSongsByAlbumId(albumId);
             } catch (Exception e) {
                 return new ResponseEntity<ApiResponse>(
-                        new ApiResponse(false, "No se ha Recuperado la informac&oacute; de las canciones por este album",
+                        new ApiResponse(false,
+                                "No se ha Recuperado la informac&oacute; de las canciones por este album",
                                 null),
                         HttpStatus.NOT_FOUND);
             }
-            if(songs.size()>0){
+            if (songs.size() > 0) {
                 Iterator<Song> songsIterator = songs.iterator();
                 while (songsIterator.hasNext()) {
-                    Song songIteration=songsIterator.next();
+                    Song songIteration = songsIterator.next();
                     songIteration.setAlbum(null);
                     songIteration.setAlbumId(null);
-                   boolean isLiked=songService.songIsLiked(songIteration.getSongId(), albumId,token);
-                   songIteration.setIsLikedByCurrentUser(isLiked);
+                    boolean isLiked = songService.songIsLiked(songIteration.getSongId(), albumId, token);
+                    songIteration.setIsLikedByCurrentUser(isLiked);
                 }
-                Collections.sort(songs,new Comparator<Song>() {
+                Collections.sort(songs, new Comparator<Song>() {
 
                     @Override
                     public int compare(Song arg0, Song arg1) {
-                        return arg0.getNumberSong()!=null? arg0.getNumberSong().compareTo(arg1.getNumberSong()):0;
+                        return arg0.getNumberSong() != null ? arg0.getNumberSong().compareTo(arg1.getNumberSong()) : 0;
                     }
-                    
+
                 });
             }
             response.addData("songs", songs);
@@ -244,6 +276,7 @@ public class AlbumController {
         return new ResponseEntity<ApiResponse>(new ApiResponse(false, ERROR_MESSAGE, null, errors),
                 HttpStatus.NOT_FOUND);
     }
+
     @GetMapping("/{id}/imageThumb")
     public ResponseEntity<?> getImageAlbumThumb(@PathVariable("id") Long idAlbum) throws IOException {
         Optional<Album> albumById = albumService.getAlbumById(idAlbum);
@@ -367,14 +400,25 @@ public class AlbumController {
             // Album albumsaved = album;
 
             // String uploadDirectory ="src/main/resources/static/images/ads";
-            String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectoryAlbums;
+            // String uploadDirectory = this.uploadDirectory + "" +
+            // this.uploadDirectoryAlbums;
+            // String uploadDirectory = "/images/album";
+            String uploadDirectory=this.uploadDirectoryAlbums;
 
-            String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory, image);
+            FileUploadResponse fileUploaded = SaveFileServiceS3AWS.uploadFile(image, uploadDirectory);
+            // String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory,
+            // image);
+            String nameImgSaved = fileUploaded.getNameFile();
 
             // PATH OF THUMBNAILS
-            String uploadDirectoryThumbsAlbum = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
-            imageProcess.generateThumbnailOfImage(uploadDirectory + "" + nameImgSaved, uploadDirectoryThumbsAlbum);
+            String pathThumbTemp = this.uploadDirectory + "" + this.uploadDirectoryAlbumsThumbs;
+            // imageProcess.generateThumbnailOfImage(uploadDirectory + "" + nameImgSaved, uploadDirectoryThumbsAlbum);
+            ByteArrayOutputStream fileByteArrayOutPut=imageProcess.generateThumbnailMultiPartFile(image,pathThumbTemp);
 
+            //save the thumb of the file in s3 with the directory /thumbs/ 
+            String pathThumbTempS3 = this.uploadDirectoryAlbumsThumbs+"/"+nameImgSaved;
+            FileUploadResponse fileUploadedThumb = SaveFileServiceS3AWS.uploadThumbNailS3(fileByteArrayOutPut, pathThumbTempS3);
+    
             // actualizo el ablum creado con la ruta de la imagen guardada
             albumsaved.setNameFile(nameImgSaved);
             Album albumsavedWithImg = albumService.save(albumsaved);

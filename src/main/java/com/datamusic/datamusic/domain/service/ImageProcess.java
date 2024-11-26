@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +21,7 @@ import java.util.PriorityQueue;
 import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageProcess {
@@ -95,7 +98,7 @@ public class ImageProcess {
 
             // Guardar la miniatura
 
-            //Creo el directorio por si no esta
+            // Creo el directorio por si no esta
             Path uploadPathAlbumThumb = Path.of(uploadDirectoryThumbsAlbum);
             if (!Files.exists(uploadPathAlbumThumb)) {
                 Files.createDirectories(uploadPathAlbumThumb);
@@ -106,6 +109,50 @@ public class ImageProcess {
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    public ByteArrayOutputStream generateThumbnailMultiPartFile(MultipartFile image, String pathThumbTemp)
+            throws IOException {
+        ByteArrayOutputStream thumbnailOutputStream = new ByteArrayOutputStream();
+        // Definir el tamaño de la miniatura
+        int thumbnailWidth = 100;
+        int thumbnailHeight = 100;
+        BufferedImage originalImage = ImageIO.read(image.getInputStream());
+
+        if (originalImage == null) {
+            throw new IllegalArgumentException("El archivo no es una imagen válida.");
+        }
+
+        // Crear una nueva imagen con el tamaño de la miniatura
+        Image thumbnail = originalImage.getScaledInstance(thumbnailWidth, thumbnailHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedThumbnail = new BufferedImage(thumbnailWidth, thumbnailHeight,
+                BufferedImage.TYPE_INT_RGB);
+
+        // Dibujar la miniatura en el BufferedImage
+        Graphics2D g2d = bufferedThumbnail.createGraphics();
+        g2d.drawImage(thumbnail, 0, 0, null);
+        g2d.dispose();
+
+        File thumbnailFile = new File(pathThumbTemp + image.getOriginalFilename() + "_thumbnail.jpg");
+        ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
+
+        // También escribir la miniatura en el ByteArrayOutputStream
+        ImageIO.write(bufferedThumbnail, "jpg", thumbnailOutputStream);
+
+        return thumbnailOutputStream;
+    }
+
+    public File convertByteArrayOutputStreamToFile(ByteArrayOutputStream byteArrayOutputStream, String fileName)
+            throws IOException {
+        // Crear un archivo temporal con el nombre proporcionado
+        File file = new File(System.getProperty("java.io.tmpdir"), fileName);
+
+        // Escribir los datos del ByteArrayOutputStream al archivo
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            byteArrayOutputStream.writeTo(fos);
+        }
+
+        return file;
     }
 
     private static Map<Integer, Integer> getColorFrequency(BufferedImage image) {
