@@ -133,7 +133,7 @@ public class ImageProcess {
         g2d.drawImage(thumbnail, 0, 0, null);
         g2d.dispose();
 
-        File thumbnailFile = new File(pathThumbTemp +"/"+ image.getOriginalFilename() + "_thumbnail.jpg");
+        File thumbnailFile = new File(pathThumbTemp +"/thumbnail_"+ image.getOriginalFilename());
         ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
 
         // También escribir la miniatura en el ByteArrayOutputStream
