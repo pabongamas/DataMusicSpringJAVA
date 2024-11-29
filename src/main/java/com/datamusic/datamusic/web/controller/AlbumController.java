@@ -426,7 +426,7 @@ public class AlbumController {
             // actualizo el ablum creado con la ruta de la imagen guardada
             albumsaved.setNameFile(nameImgSaved);
             Album albumsavedWithImg = albumService.save(albumsaved);
-            albumsavedWithImg.setNameFile(null);
+            // albumsavedWithImg.setNameFile(null);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("album", albumsavedWithImg);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
