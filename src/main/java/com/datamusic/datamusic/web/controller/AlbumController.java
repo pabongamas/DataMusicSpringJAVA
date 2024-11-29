@@ -406,6 +406,9 @@ public class AlbumController {
             String uploadDirectory=this.uploadDirectoryAlbums;
 
             FileUploadResponse fileUploaded = SaveFileServiceS3AWS.uploadFile(image, uploadDirectory);
+            System.out.println(fileUploaded.getNameFile());
+            System.out.println(fileUploaded.getFilePath());
+
             // String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory,
             // image);
             String nameImgSaved = fileUploaded.getNameFile();
