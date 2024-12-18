@@ -35,7 +35,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CancionUsuarioController {
   private static final String ERROR_MESSAGE = "Han ocurrido errores";
   private static final String SUCCESSFUL_MESSAGE = "Operación exitosa";
-  private static final String NOT_FOUND_MESSAGE = "Cancion Playlist No Encontrado";
+  private static final String NOT_FOUND_MESSAGE = "Cancion Usuario No Encontrado";
 
   @Autowired
   private SongUserService songUserService;

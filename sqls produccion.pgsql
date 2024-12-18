@@ -149,3 +149,19 @@
 -- select * from usuarios;
 
 -- select * from generos;
+
+    CREATE TABLE  ALBUMS_USUARIOS (
+  "id_usuario" INT NOT NULL,
+  "id_album" INT NOT NULL,
+  "fecha_agregada" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY ("id_album", "id_usuario"),
+  CONSTRAINT "fk_ALBUMS_USUARIO_USUARIO1"
+    FOREIGN KEY ("id_usuario")
+    REFERENCES USUARIOS ("id_usuario")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT "fk_USUARIO_ALBUMS_ALBUMS1"
+    FOREIGN KEY ("id_album")
+    REFERENCES ALBUMS ("id_album")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);

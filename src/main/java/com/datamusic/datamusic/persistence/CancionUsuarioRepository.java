@@ -47,7 +47,7 @@ public class CancionUsuarioRepository implements SongUserRepository {
             //create object primary key 
             CancionesUsuariosPK CancionesUsuariosPK=new CancionesUsuariosPK();
             CancionesUsuariosPK.setIdCancion(songId);
-            CancionesUsuariosPK.setIdUsuario(songId);
+            CancionesUsuariosPK.setIdUsuario(userId);
 
             //create object cancion 
             Optional<Cancion> cancion=cancionCrudRepository.findById(songId);
@@ -78,7 +78,7 @@ public class CancionUsuarioRepository implements SongUserRepository {
             //create object primary key 
             CancionesUsuariosPK CancionesUsuariosPK=new CancionesUsuariosPK();
             CancionesUsuariosPK.setIdCancion(songId);
-            CancionesUsuariosPK.setIdUsuario(songId);
+            CancionesUsuariosPK.setIdUsuario(userId);
 
             //create object cancion 
             Optional<Cancion> cancion=cancionCrudRepository.findById(songId);

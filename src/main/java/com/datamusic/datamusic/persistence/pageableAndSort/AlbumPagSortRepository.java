@@ -9,5 +9,4 @@ import com.datamusic.datamusic.persistence.entity.AlbumEntity;
 
 public interface AlbumPagSortRepository extends ListPagingAndSortingRepository<AlbumEntity,Long>{
     Page<AlbumEntity> findByIdGenero(Long genderId, Pageable pageable);
-    
 }

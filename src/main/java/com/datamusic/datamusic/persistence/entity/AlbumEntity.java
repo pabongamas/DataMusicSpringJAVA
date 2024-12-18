@@ -41,6 +41,11 @@ public class AlbumEntity {
     @Column(name = "nombre_archivo")
     private String nombreArchivo;
 
+    
+    @OneToMany(mappedBy = "album",cascade = {CascadeType.ALL})
+    private List<AlbumsUsuario> usuarios;
+
+
     public Long getIdAlbum() {
         return idAlbum;
     }
@@ -95,6 +100,14 @@ public class AlbumEntity {
 
     public void setNombreArchivo(String nombreArchivo) {
         this.nombreArchivo = nombreArchivo;
+    }
+
+    public List<AlbumsUsuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<AlbumsUsuario> usuarios) {
+        this.usuarios = usuarios;
     }
 
     
