@@ -24,6 +24,8 @@ public interface AlbumMapper {
       @Mapping(target = "gender.album", ignore = true),
       @Mapping(source = "artistas", target = "artists"),
       @Mapping(source = "nombreArchivo", target = "nameFile"),
+      @Mapping(source = "coverAlbum", target = "cover"),
+
 
 
   })

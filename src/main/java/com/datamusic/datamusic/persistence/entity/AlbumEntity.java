@@ -38,6 +38,9 @@ public class AlbumEntity {
     @OneToMany(mappedBy = "album",cascade = {CascadeType.ALL})
     private List<AlbumsArtista> artistas;
 
+    @Column(name = "cover_album")
+    private String coverAlbum;
+
     @Column(name = "nombre_archivo")
     private String nombreArchivo;
 
@@ -109,6 +112,15 @@ public class AlbumEntity {
     public void setUsuarios(List<AlbumsUsuario> usuarios) {
         this.usuarios = usuarios;
     }
+
+    public String getCoverAlbum() {
+        return coverAlbum;
+    }
+
+    public void setCoverAlbum(String coverAlbum) {
+        this.coverAlbum = coverAlbum;
+    }
+    
 
     
     

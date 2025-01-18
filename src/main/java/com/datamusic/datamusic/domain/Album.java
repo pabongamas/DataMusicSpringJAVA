@@ -25,6 +25,8 @@ public class Album {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String nameFile;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String cover;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private byte[] imgAlbum;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String pathImageAlbum;
@@ -100,6 +102,8 @@ public class Album {
     public void setPathImageAlbum(String pathImageAlbum) {
         this.pathImageAlbum = pathImageAlbum;
     }
+    
+    
 
     @Override
     public int hashCode() {
@@ -112,6 +116,7 @@ public class Album {
         result = prime * result + ((gender == null) ? 0 : gender.hashCode());
         result = prime * result + ((artists == null) ? 0 : artists.hashCode());
         result = prime * result + ((nameFile == null) ? 0 : nameFile.hashCode());
+        result = prime * result + ((cover == null) ? 0 : cover.hashCode());
         result = prime * result + Arrays.hashCode(imgAlbum);
         result = prime * result + ((pathImageAlbum == null) ? 0 : pathImageAlbum.hashCode());
         return result;
@@ -161,6 +166,11 @@ public class Album {
                 return false;
         } else if (!nameFile.equals(other.nameFile))
             return false;
+        if (cover == null) {
+            if (other.cover != null)
+                return false;
+        } else if (!cover.equals(other.cover))
+            return false;
         if (!Arrays.equals(imgAlbum, other.imgAlbum))
             return false;
         if (pathImageAlbum == null) {
@@ -170,9 +180,13 @@ public class Album {
             return false;
         return true;
     }
-    
-    
 
-    
-    
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
 }

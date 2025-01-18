@@ -222,12 +222,12 @@ public class AlbumController {
                 }
 
                 // obtener colores principales de la imagen del album
-                List<Map<String, Object>> colorsImg = imageProcess.colorsOfImage(uploadDirectory + "" + nameImgAlbum,
-                        1);
+                // List<Map<String, Object>> colorsImg = imageProcess.colorsOfImage(uploadDirectory + "" + nameImgAlbum,
+                //         1);
 
                 response.addData("route", uploadDirectory + "" + nameImgAlbum);
                 // response.addData("routeThumb", uploadDirectoryThumb + "" + nameImgAlbum);
-                response.addData("colors", colorsImg);
+                // response.addData("colors", colorsImg);
                 // response.addData("imgs", imagesByteList);
 
             }
@@ -406,9 +406,9 @@ public class AlbumController {
             String uploadDirectory=this.uploadDirectoryAlbums;
 
             FileUploadResponse fileUploaded = SaveFileServiceS3AWS.uploadFile(image, uploadDirectory);
-            System.out.println(fileUploaded.toString());
-            System.out.println(fileUploaded.getNameFile());
-            System.out.println(fileUploaded.getFilePath());
+            // System.out.println(fileUploaded.toString());
+            // System.out.println(fileUploaded.getNameFile());
+            // System.out.println(fileUploaded.getFilePath());
 
             // String nameImgSaved = saveFileService.saveFileToStorage(uploadDirectory,
             // image);
@@ -419,12 +419,26 @@ public class AlbumController {
             // imageProcess.generateThumbnailOfImage(uploadDirectory + "" + nameImgSaved, uploadDirectoryThumbsAlbum);
             ByteArrayOutputStream fileByteArrayOutPut=imageProcess.generateThumbnailMultiPartFile(image,pathThumbTemp);
 
+            byte[] imageInBytes=fileByteArrayOutPut.toByteArray();
+            List<String> colorsArray=new ArrayList<>();
+            List<Map<String, Object>> colorsImage= imageProcess.colorsOfImage(imageInBytes,2);
+            colorsImage.forEach(color->{
+                if(!colorsArray.contains(color.get("colorHex"))){
+                    colorsArray.add(color.get("colorHex").toString());
+                }
+            });
+            String colorsAlbum=colorsArray.toString();
+            // colorsImage.forEach(j->{
+            //     System.out.println(j.);
+            // });
             //save the thumb of the file in s3 with the directory /thumbs/ 
             String pathThumbTempS3 = this.uploadDirectoryAlbumsThumbs+"/"+nameImgSaved;
+            
             FileUploadResponse fileUploadedThumb = SaveFileServiceS3AWS.uploadThumbNailS3(fileByteArrayOutPut, pathThumbTempS3);
     
             // actualizo el ablum creado con la ruta de la imagen guardada
             albumsaved.setNameFile(nameImgSaved);
+            albumsaved.setCover(colorsAlbum);
             Album albumsavedWithImg = albumService.save(albumsaved);
             // albumsavedWithImg.setNameFile(null);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);

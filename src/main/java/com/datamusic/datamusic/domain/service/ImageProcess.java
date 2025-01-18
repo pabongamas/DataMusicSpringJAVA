@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,12 +33,14 @@ public class ImageProcess {
      * @return Una lista de mapas, donde cada mapa contiene la frecuencia y el valor
      *         hexadecimal de un color.
      */
-    public List<Map<String, Object>> colorsOfImage(String pathImage, int numberColors) {
+    public List<Map<String, Object>> colorsOfImage(byte[] imageBytes, int numberColors) {
         List<Map<String, Object>> colors = new ArrayList<>();
 
         try {
-            BufferedImage image = ImageIO.read(new File(pathImage));
 
+            // Convert the byte array to a BufferedImage
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(imageBytes);
+            BufferedImage image = ImageIO.read(byteArrayInputStream);
             // Calcular la frecuencia de los colores
             Map<Integer, Integer> colorFrequency = getColorFrequency(image);
 
@@ -72,6 +75,7 @@ public class ImageProcess {
             });
 
         } catch (IOException e) {
+            System.out.println(e);
         }
         return colors;
     }
@@ -133,7 +137,7 @@ public class ImageProcess {
         g2d.drawImage(thumbnail, 0, 0, null);
         g2d.dispose();
 
-        File thumbnailFile = new File(pathThumbTemp +"/thumbnail_"+ image.getOriginalFilename());
+        File thumbnailFile = new File(pathThumbTemp + "/thumbnail_" + image.getOriginalFilename());
         ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
 
         // También escribir la miniatura en el ByteArrayOutputStream
