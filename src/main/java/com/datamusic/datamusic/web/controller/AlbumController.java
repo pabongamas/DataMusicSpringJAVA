@@ -41,12 +41,14 @@ import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.Artist;
 import com.datamusic.datamusic.domain.Song;
+import com.datamusic.datamusic.domain.service.AlbumArtistService;
 import com.datamusic.datamusic.domain.service.AlbumService;
 import com.datamusic.datamusic.domain.service.ImageProcess;
 import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.domain.service.SaveFileServiceS3AWS;
 import com.datamusic.datamusic.domain.service.SongService;
 import com.datamusic.datamusic.persistence.DTO.FileUploadResponse;
+import com.datamusic.datamusic.persistence.DTO.FormAdminSaveAlbum;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -72,6 +74,9 @@ public class AlbumController {
     private ImageProcess imageProcess;
     @Autowired
     private SaveFileServiceS3AWS SaveFileServiceS3AWS;
+
+    @Autowired
+    private AlbumArtistService albumArtistService;
 
     @Value("${upload.directory}")
     private String uploadDirectory;
@@ -392,11 +397,16 @@ public class AlbumController {
         }
     }
 
-    @PostMapping("/saveWithImage")
-    public ResponseEntity<ApiResponse> saveWithImage(@Valid @RequestPart("album") Album album,
+    @PostMapping(value="/saveWithImage",consumes = {"multipart/form-data"})
+    public ResponseEntity<ApiResponse> saveWithImage(@Valid @RequestPart("album") FormAdminSaveAlbum album,
             @RequestPart("image") MultipartFile image) throws IOException {
         try {
-            Album albumsaved = albumService.save(album);
+            Album  albumToSave=new Album();
+            albumToSave.setName(album.getName());
+            albumToSave.setGenderId(album.getGenderId());
+            albumToSave.setYear(album.getYear());
+
+            Album albumsaved = albumService.save(albumToSave);
             // Album albumsaved = album;
 
             // String uploadDirectory ="src/main/resources/static/images/ads";
@@ -440,6 +450,14 @@ public class AlbumController {
             albumsaved.setNameFile(nameImgSaved);
             albumsaved.setCover(colorsAlbum);
             Album albumsavedWithImg = albumService.save(albumsaved);
+
+            // next method for save relation album with artist , it depends if the parameter artistId came in  the DTO FormAdminSaveAlbum 
+            if(album.getArtistId()!=null){
+                AlbumArtist albumArtistToSave=new AlbumArtist();
+                albumArtistToSave.setAlbumId(albumsaved.getAlbumId());
+                albumArtistToSave.setArtistId(album.getArtistId());
+                albumArtistService.saveAlbumArtist(albumArtistToSave);
+            }
             // albumsavedWithImg.setNameFile(null);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             response.addData("album", albumsavedWithImg);

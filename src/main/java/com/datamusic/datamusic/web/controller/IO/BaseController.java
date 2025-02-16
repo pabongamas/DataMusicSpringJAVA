@@ -97,6 +97,7 @@ public class BaseController {
     @ResponseBody
     public ApiResponse handleExceptionDataHttp(HttpMessageNotReadableException e) {
         Map<String, String> errors = new HashMap<String, String>();
+        System.out.println(e);
         errors.put("error","No ha enviado en el payload de la request la información o la informacion tiene un mal formato.");
         ApiResponse respuesta = new ApiResponse(false, "Han ocurrido errores", null,errors);
         return respuesta;

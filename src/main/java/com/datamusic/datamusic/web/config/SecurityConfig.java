@@ -57,7 +57,10 @@ public class SecurityConfig {
                                     "ADMIN")
                             .requestMatchers("/albums/**").hasRole("ARTIST")
                             // artists_albums
-                            .requestMatchers("/albumsArtist/**").hasRole("ARTIST")
+                        //     .requestMatchers("/albumsArtist/**").hasRole("ARTIST")
+                            .requestMatchers("/albumsArtist/**").hasAnyRole("MEMBER_PREMIUM",
+                            "ARTIST", "ADMIN")
+
                             // artists
                             .requestMatchers(HttpMethod.POST, "/artists/save").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.DELETE, "/artists/delete/**").hasRole("ADMIN")

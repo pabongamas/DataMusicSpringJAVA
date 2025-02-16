@@ -49,7 +49,7 @@ public class CancionRepository implements SongRepository {
 
     @Override
     public List<Song> getSongsByAlbumId(Long albumId) {
-        List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findByIdAlbum(albumId);
+        List<Cancion> canciones = (List<Cancion>) cancionCrudRepository.findByIdAlbumOrderByNumeroCancion(albumId);
         return mapper.toSong(canciones);
     }
     @Override

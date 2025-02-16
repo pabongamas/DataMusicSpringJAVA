@@ -9,7 +9,7 @@ import com.datamusic.datamusic.persistence.entity.Cancion;
 
 public interface CancionCrudRepository extends CrudRepository<Cancion,Long> {
 
-     List<Cancion> findByIdAlbum(Long idAlbum);
+     List<Cancion> findByIdAlbumOrderByNumeroCancion(Long idAlbum);
 
      List<Cancion> findByAlbumIdGenero(Long idGenero);
 

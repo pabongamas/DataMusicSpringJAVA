@@ -30,6 +30,7 @@ import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.Song;
 import com.datamusic.datamusic.domain.service.SaveFileService;
 import com.datamusic.datamusic.domain.service.SongService;
+import com.datamusic.datamusic.persistence.DTO.FormAdminSaveSong;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
 import jakarta.validation.Valid;
@@ -259,10 +260,20 @@ public class CancionController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> save(@Valid @RequestPart("song") Song song,
+    public ResponseEntity<ApiResponse> save(@Valid @RequestPart("song") FormAdminSaveSong songToSaveDTO,
             @RequestPart(value = "file", required = false) MultipartFile fileSong) throws IOException {
+        Song song = new Song();
+        song.setName(songToSaveDTO.getName());
+        song.setDuration(songToSaveDTO.getDuration());
+        song.setExplicit(songToSaveDTO.getExplicit());
+        song.setNumberSong(songToSaveDTO.getNumberSong());
+        song.setAlbumId(songToSaveDTO.getAlbumId());
+        song.setSongId(songToSaveDTO.getSongId());
+        System.out.println(songToSaveDTO.getSongId());
+        song.setNameFile(songToSaveDTO.getNameFile());
         try {
-            if (song.getSongId() == null) {
+            
+            if (song.getSongId() == null || !songToSaveDTO.getLoaded()) {
                 Optional<Song> validCancion = songService.getSongByNameAndAlbumId(song.getName(), song.getAlbumId());
                 if (validCancion.isPresent()) {
                     Map<String, String> errors = new HashMap<String, String>();
@@ -271,16 +282,19 @@ public class CancionController {
                             HttpStatus.BAD_REQUEST);
                 }
             }
-            if (fileSong != null) {
-                // String uploadDirectory ="src/main/resources/static/songs";
-                String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
-                String nameFileSaved = saveFileService.saveFileToStorage(uploadDirectory, fileSong);
-
-                song.setNameFile(nameFileSaved);
-            }
-            Song songSaved = songService.save(song);
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
-            response.addData("song", songSaved);
+            if(!songToSaveDTO.getLoaded() || (songToSaveDTO.getLoaded() && songToSaveDTO.getEdited())){
+                System.out.println(fileSong);
+                if (fileSong != null) {
+                    // String uploadDirectory ="src/main/resources/static/songs";
+                    String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
+                    String nameFileSaved = saveFileService.saveFileToStorage(uploadDirectory, fileSong);
+    
+                    song.setNameFile(nameFileSaved);
+                }
+                Song songSaved = songService.save(song);
+                response.addData("song", songSaved);
+            }
             return new ResponseEntity<ApiResponse>(response, HttpStatus.CREATED);
         } catch (SQLGrammarException ex) {
             return new ResponseEntity<ApiResponse>(
@@ -333,42 +347,42 @@ public class CancionController {
         String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
 
         Optional<Song> songObj = this.songService.getSong(idSong);
-            Song song = songObj.get();
-            String fileName = song.getNameFile();
-            Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
-            RandomAccessFile audioFile = new RandomAccessFile(filePath.toFile(), "r");
-            long fileSize = audioFile.length();
+        Song song = songObj.get();
+        String fileName = song.getNameFile();
+        Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
+        RandomAccessFile audioFile = new RandomAccessFile(filePath.toFile(), "r");
+        long fileSize = audioFile.length();
 
-            if (rangeHeader == null) {
-                // Si no se especifica un rango, devolver el archivo completo
-                byte[] fileContent = new byte[(int) fileSize];
-                audioFile.readFully(fileContent);
-                InputStream inputStream = new ByteArrayInputStream(fileContent);
-                InputStreamResource resource = new InputStreamResource(inputStream);
-
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize))
-                        .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
-                        .body(resource);
-            }
-            // Parsear el rango solicitado
-            HttpRange range = HttpRange.parseRanges(rangeHeader).get(0);
-            long start = range.getRangeStart(fileSize);
-            long end = range.getRangeEnd(fileSize);
-            long contentLength = end - start + 1;
-
-            // Leer el rango específico en un byte array
-            audioFile.seek(start);
-            byte[] partialContent = new byte[(int) contentLength];
-            audioFile.readFully(partialContent);
-            InputStream inputStream = new ByteArrayInputStream(partialContent);
+        if (rangeHeader == null) {
+            // Si no se especifica un rango, devolver el archivo completo
+            byte[] fileContent = new byte[(int) fileSize];
+            audioFile.readFully(fileContent);
+            InputStream inputStream = new ByteArrayInputStream(fileContent);
             InputStreamResource resource = new InputStreamResource(inputStream);
 
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-            .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
-            .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileSize)
-            .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
-            .body(resource);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize))
+                    .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+                    .body(resource);
+        }
+        // Parsear el rango solicitado
+        HttpRange range = HttpRange.parseRanges(rangeHeader).get(0);
+        long start = range.getRangeStart(fileSize);
+        long end = range.getRangeEnd(fileSize);
+        long contentLength = end - start + 1;
+
+        // Leer el rango específico en un byte array
+        audioFile.seek(start);
+        byte[] partialContent = new byte[(int) contentLength];
+        audioFile.readFully(partialContent);
+        InputStream inputStream = new ByteArrayInputStream(partialContent);
+        InputStreamResource resource = new InputStreamResource(inputStream);
+
+        return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
+                .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileSize)
+                .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
+                .body(resource);
     }
 
 }
