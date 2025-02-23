@@ -275,7 +275,6 @@ public class CancionController {
         song.setNumberSong(songToSaveDTO.getNumberSong());
         song.setAlbumId(songToSaveDTO.getAlbumId());
         song.setSongId(songToSaveDTO.getSongId());
-        System.out.println(songToSaveDTO.getSongId());
         song.setNameFile(songToSaveDTO.getNameFile());
         try {
 
@@ -290,7 +289,6 @@ public class CancionController {
             }
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
             if (!songToSaveDTO.getLoaded() || (songToSaveDTO.getLoaded() && songToSaveDTO.getEdited())) {
-                System.out.println(fileSong);
                 if (fileSong != null) {
                     String uploadDirectory = this.uploadDirectorySongs + "/" + song.getAlbumId();
                     FileUploadResponse fileUploaded = SaveFileServiceS3AWS.uploadFile(fileSong, uploadDirectory);

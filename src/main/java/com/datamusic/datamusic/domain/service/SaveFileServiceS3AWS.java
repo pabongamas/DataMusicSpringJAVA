@@ -59,7 +59,6 @@ public class SaveFileServiceS3AWS {
     }
 
     public S3Object getFileFromS3(String s3Key) {
-        System.out.println(s3Key);
         String filePath = "";
         String[] activeProfiles = environment.getActiveProfiles();
         if (containsProfile(activeProfiles, "dev")) {
