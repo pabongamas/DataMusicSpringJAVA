@@ -58,6 +58,18 @@ public class SaveFileServiceS3AWS {
                 .build();
     }
 
+    public S3Object getFileFromS3(String s3Key) {
+        System.out.println(s3Key);
+        String filePath = "";
+        String[] activeProfiles = environment.getActiveProfiles();
+        if (containsProfile(activeProfiles, "dev")) {
+            filePath = "dev" +s3Key;
+        } else if (containsProfile(activeProfiles, "prod")) {
+            filePath = "prod" +s3Key;
+        }
+        return s3Client.getObject(bucketName, filePath);
+    }
+
     public FileUploadResponse uploadFile(MultipartFile multipartFile, String pathToSave) {
         FileUploadResponse fileUploadResponse = new FileUploadResponse();
         String filePath = "";

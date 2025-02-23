@@ -23,13 +23,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.datamusic.datamusic.domain.Album;
 import com.datamusic.datamusic.domain.AlbumArtist;
 import com.datamusic.datamusic.domain.Artist;
 import com.datamusic.datamusic.domain.Gender;
 import com.datamusic.datamusic.domain.Song;
 import com.datamusic.datamusic.domain.service.SaveFileService;
+import com.datamusic.datamusic.domain.service.SaveFileServiceS3AWS;
 import com.datamusic.datamusic.domain.service.SongService;
+import com.datamusic.datamusic.persistence.DTO.FileUploadResponse;
 import com.datamusic.datamusic.persistence.DTO.FormAdminSaveSong;
 import com.datamusic.datamusic.web.controller.IO.ApiResponse;
 
@@ -70,6 +73,9 @@ public class CancionController {
 
     @Autowired
     private SongService songService;
+
+    @Autowired
+    private SaveFileServiceS3AWS SaveFileServiceS3AWS;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAll() {
@@ -272,7 +278,7 @@ public class CancionController {
         System.out.println(songToSaveDTO.getSongId());
         song.setNameFile(songToSaveDTO.getNameFile());
         try {
-            
+
             if (song.getSongId() == null || !songToSaveDTO.getLoaded()) {
                 Optional<Song> validCancion = songService.getSongByNameAndAlbumId(song.getName(), song.getAlbumId());
                 if (validCancion.isPresent()) {
@@ -283,13 +289,15 @@ public class CancionController {
                 }
             }
             ApiResponse response = new ApiResponse(true, SUCCESSFUL_MESSAGE);
-            if(!songToSaveDTO.getLoaded() || (songToSaveDTO.getLoaded() && songToSaveDTO.getEdited())){
+            if (!songToSaveDTO.getLoaded() || (songToSaveDTO.getLoaded() && songToSaveDTO.getEdited())) {
                 System.out.println(fileSong);
                 if (fileSong != null) {
-                    // String uploadDirectory ="src/main/resources/static/songs";
-                    String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
-                    String nameFileSaved = saveFileService.saveFileToStorage(uploadDirectory, fileSong);
-    
+                    String uploadDirectory = this.uploadDirectorySongs + "/" + song.getAlbumId();
+                    FileUploadResponse fileUploaded = SaveFileServiceS3AWS.uploadFile(fileSong, uploadDirectory);
+                    // String nameFileSaved = saveFileService.saveFileToStorage(uploadDirectory,
+                    // fileSong);
+                    String nameFileSaved = fileUploaded.getNameFile();
+
                     song.setNameFile(nameFileSaved);
                 }
                 Song songSaved = songService.save(song);
@@ -344,26 +352,28 @@ public class CancionController {
     public ResponseEntity<InputStreamResource> streamAudio(@PathVariable Long idSong,
             @RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException {
 
-        String uploadDirectory = this.uploadDirectory + "" + this.uploadDirectorySongs;
-
         Optional<Song> songObj = this.songService.getSong(idSong);
         Song song = songObj.get();
         String fileName = song.getNameFile();
-        Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
-        RandomAccessFile audioFile = new RandomAccessFile(filePath.toFile(), "r");
-        long fileSize = audioFile.length();
+        Long albumId = song.getAlbumId();
+
+        String uploadDirectorySongs = this.uploadDirectorySongs;
+
+        // Obtener el archivo desde S3
+        String s3Key = uploadDirectorySongs + "/" + albumId + "/" + fileName; // Ruta del archivo en S3
+        S3Object s3Object = SaveFileServiceS3AWS.getFileFromS3(s3Key); // Método para obtener el archivo desde S3
+        // FileUploadResponse fileResponse =
+        // SaveFileServiceS3AWS.getFile(uploadDirectorySongs,+albumId+"/"+fileName);
+        Path filePath = Paths.get(uploadDirectory + "/" + albumId).resolve(fileName).normalize();
+        InputStream inputStream = s3Object.getObjectContent();
+        long fileSize = s3Object.getObjectMetadata().getContentLength();
 
         if (rangeHeader == null) {
             // Si no se especifica un rango, devolver el archivo completo
-            byte[] fileContent = new byte[(int) fileSize];
-            audioFile.readFully(fileContent);
-            InputStream inputStream = new ByteArrayInputStream(fileContent);
-            InputStreamResource resource = new InputStreamResource(inputStream);
-
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(fileSize))
                     .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
-                    .body(resource);
+                    .body(new InputStreamResource(inputStream));
         }
         // Parsear el rango solicitado
         HttpRange range = HttpRange.parseRanges(rangeHeader).get(0);
@@ -371,18 +381,22 @@ public class CancionController {
         long end = range.getRangeEnd(fileSize);
         long contentLength = end - start + 1;
 
-        // Leer el rango específico en un byte array
-        audioFile.seek(start);
+        // Leer el rango específico desde S3
         byte[] partialContent = new byte[(int) contentLength];
-        audioFile.readFully(partialContent);
-        InputStream inputStream = new ByteArrayInputStream(partialContent);
-        InputStreamResource resource = new InputStreamResource(inputStream);
+        inputStream.skip(start); // Saltar al inicio del rango
+        inputStream.read(partialContent); // Leer el rango específico
+
+        // Cerrar el InputStream original
+        inputStream.close();
+
+        // Crear un nuevo InputStream con el contenido parcial
+        InputStream partialInputStream = new ByteArrayInputStream(partialContent);
 
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
                 .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(contentLength))
                 .header(HttpHeaders.CONTENT_RANGE, "bytes " + start + "-" + end + "/" + fileSize)
                 .header(HttpHeaders.CONTENT_TYPE, "audio/mpeg")
-                .body(resource);
+                .body(new InputStreamResource(partialInputStream));
     }
 
 }
