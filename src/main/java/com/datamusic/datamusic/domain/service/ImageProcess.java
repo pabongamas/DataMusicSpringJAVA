@@ -117,33 +117,45 @@ public class ImageProcess {
 
     public ByteArrayOutputStream generateThumbnailMultiPartFile(MultipartFile image, String pathThumbTemp)
             throws IOException {
-        ByteArrayOutputStream thumbnailOutputStream = new ByteArrayOutputStream();
-        // Definir el tamaño de la miniatura
-        int thumbnailWidth = 100;
-        int thumbnailHeight = 100;
-        BufferedImage originalImage = ImageIO.read(image.getInputStream());
-
-        if (originalImage == null) {
-            throw new IllegalArgumentException("El archivo no es una imagen válida.");
-        }
-
-        // Crear una nueva imagen con el tamaño de la miniatura
-        Image thumbnail = originalImage.getScaledInstance(thumbnailWidth, thumbnailHeight, Image.SCALE_SMOOTH);
-        BufferedImage bufferedThumbnail = new BufferedImage(thumbnailWidth, thumbnailHeight,
-                BufferedImage.TYPE_INT_RGB);
-
-        // Dibujar la miniatura en el BufferedImage
-        Graphics2D g2d = bufferedThumbnail.createGraphics();
-        g2d.drawImage(thumbnail, 0, 0, null);
-        g2d.dispose();
-
-        File thumbnailFile = new File(pathThumbTemp + "/thumbnail_" + image.getOriginalFilename());
-        ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
-
-        // También escribir la miniatura en el ByteArrayOutputStream
-        ImageIO.write(bufferedThumbnail, "jpg", thumbnailOutputStream);
-
-        return thumbnailOutputStream;
+                try {
+                    // Verificar y crear el directorio si no existe
+                    File directory = new File(pathThumbTemp);
+                    if (!directory.exists()) {
+                        directory.mkdirs();
+                    }
+            
+                    // Validar el nombre del archivo
+                    String originalFilename = image.getOriginalFilename();
+                    String safeFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
+                    File thumbnailFile = new File(pathThumbTemp + "/thumbnail_" + safeFilename);
+            
+                    // Generar la miniatura
+                    ByteArrayOutputStream thumbnailOutputStream = new ByteArrayOutputStream();
+                    int thumbnailWidth = 100;
+                    int thumbnailHeight = 100;
+                    BufferedImage originalImage = ImageIO.read(image.getInputStream());
+            
+                    if (originalImage == null) {
+                        throw new IllegalArgumentException("El archivo no es una imagen válida.");
+                    }
+            
+                    Image thumbnail = originalImage.getScaledInstance(thumbnailWidth, thumbnailHeight, Image.SCALE_SMOOTH);
+                    BufferedImage bufferedThumbnail = new BufferedImage(thumbnailWidth, thumbnailHeight, BufferedImage.TYPE_INT_RGB);
+            
+                    Graphics2D g2d = bufferedThumbnail.createGraphics();
+                    g2d.drawImage(thumbnail, 0, 0, null);
+                    g2d.dispose();
+            
+                    // Guardar la miniatura en el archivo y en el ByteArrayOutputStream
+                    ImageIO.write(bufferedThumbnail, "jpg", thumbnailFile);
+                    ImageIO.write(bufferedThumbnail, "jpg", thumbnailOutputStream);
+            
+                    return thumbnailOutputStream;
+                } catch (IOException e) {
+                    throw new IOException("Error al generar la miniatura: " + e.getMessage(), e);
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Error en la imagen: " + e.getMessage(), e);
+                }
     }
 
     public File convertByteArrayOutputStreamToFile(ByteArrayOutputStream byteArrayOutputStream, String fileName)
